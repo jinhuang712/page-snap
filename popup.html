@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Lossless Web Scanner</title>
+    <link rel="stylesheet" href="popup.css">
+  </head>
+  <body>
+    <main class="panel">
+      <header>
+        <h1>Web Scanner</h1>
+        <span id="status-pill" class="status-pill">Ready</span>
+      </header>
+
+      <section class="field">
+        <label for="format">Archive type</label>
+        <select id="format">
+          <option value="mhtml">MHTML</option>
+          <option value="html">Single HTML</option>
+          <option value="zip">Web Archive ZIP</option>
+        </select>
+      </section>
+
+      <label class="check-row">
+        <input id="scroll-page" type="checkbox" checked>
+        <span>Scroll full page first</span>
+      </label>
+
+      <label class="check-row">
+        <input id="include-readable-text" type="checkbox" checked>
+        <span>Include readable text metadata</span>
+      </label>
+
+      <button id="save" type="button">Save current page</button>
+
+      <p id="status" role="status" aria-live="polite"></p>
+    </main>
+
+    <script src="popup.js" type="module"></script>
+  </body>
+</html>

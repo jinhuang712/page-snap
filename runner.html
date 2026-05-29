@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Saving Web Archive</title>
+    <link rel="stylesheet" href="runner.css">
+  </head>
+  <body>
+    <main class="runner">
+      <header>
+        <h1>Saving Archive</h1>
+        <span id="status-pill" class="status-pill busy">Working</span>
+      </header>
+
+      <section class="progress-panel">
+        <div id="stage">Starting capture.</div>
+        <progress id="progress" max="100" value="3"></progress>
+      </section>
+
+      <dl class="details">
+        <div>
+          <dt>Format</dt>
+          <dd id="format">-</dd>
+        </div>
+        <div>
+          <dt>File</dt>
+          <dd id="filename">-</dd>
+        </div>
+        <div>
+          <dt>Resources</dt>
+          <dd id="resources">-</dd>
+        </div>
+      </dl>
+
+      <pre id="log" aria-live="polite"></pre>
+
+      <button id="close" type="button" disabled>Close</button>
+    </main>
+
+    <script src="runner.js" type="module"></script>
+  </body>
+</html>
