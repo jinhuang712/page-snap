@@ -1,6 +1,7 @@
 import { createZip } from "./zip-store.js";
+import { sanitizeFileName } from "./archive-utils.js";
 
-const ARCHIVE_VERSION = "0.1.1";
+const ARCHIVE_VERSION = "0.2.0";
 const MAX_SCROLL_STEPS = 80;
 const SCROLL_SETTLE_MS = 180;
 const RESOURCE_TIMEOUT_MS = 15000;
@@ -161,6 +162,14 @@ async function saveZipArchive(snapshot) {
     {
       path: "text-content.txt",
       data: new TextEncoder().encode(snapshot.readableText || "")
+    },
+    {
+      path: "text-content.md",
+      data: new TextEncoder().encode(snapshot.readableMarkdown || snapshot.readableText || "")
+    },
+    {
+      path: "messages.json",
+      data: new TextEncoder().encode(JSON.stringify(snapshot.readableMessages || [], null, 2))
     }
   ];
 
@@ -212,10 +221,11 @@ function normalizeSnapshot(snapshot, tabUrl) {
   }
 
   const pageUrl = snapshot.url || tabUrl;
+  const title = snapshot.title || new URL(pageUrl).hostname || "web-archive";
   return {
     ...snapshot,
     url: pageUrl,
-    baseName: sanitizeFileName(snapshot.title || new URL(pageUrl).hostname || "web-archive")
+    baseName: sanitizeFileName(title)
   };
 }
 
@@ -388,6 +398,22 @@ function injectArchiveMetadata(archiveDocument, snapshot, resources) {
     readableText.textContent = snapshot.readableText;
     head.prepend(readableText);
   }
+
+  if (snapshot.readableMarkdown) {
+    const readableMarkdown = archiveDocument.createElement("script");
+    readableMarkdown.type = "text/markdown";
+    readableMarkdown.id = "web-scanner-readable-markdown";
+    readableMarkdown.textContent = snapshot.readableMarkdown;
+    head.prepend(readableMarkdown);
+  }
+
+  if (snapshot.readableMessages?.length) {
+    const readableMessages = archiveDocument.createElement("script");
+    readableMessages.type = "application/json";
+    readableMessages.id = "web-scanner-readable-messages";
+    readableMessages.textContent = JSON.stringify(snapshot.readableMessages, null, 2);
+    head.prepend(readableMessages);
+  }
 }
 
 function ensureHead(archiveDocument) {
@@ -408,6 +434,11 @@ function buildMetadata(snapshot, resources) {
     title: snapshot.title,
     baseUrl: snapshot.baseUrl,
     dimensions: snapshot.dimensions,
+    readableText: {
+      textChars: snapshot.readableText?.length || 0,
+      markdownChars: snapshot.readableMarkdown?.length || 0,
+      messages: snapshot.readableMessages?.length || 0
+    },
     resourceCount: resources.length,
     failedResources: resources
       .filter((resource) => !resource.ok)
@@ -618,17 +649,6 @@ function isCssResource(resource) {
 
 function decodeText(bytes) {
   return new TextDecoder("utf-8", { fatal: false }).decode(bytes);
-}
-
-function sanitizeFileName(input) {
-  const cleaned = String(input)
-    .normalize("NFKD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^\w.-]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .slice(0, 90);
-
-  return cleaned || "web-archive";
 }
 
 function archiveBaseName(tab) {

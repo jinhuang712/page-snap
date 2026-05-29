@@ -4,7 +4,7 @@ Lossless Web Scanner is a small unpacked Chrome extension for saving the current
 
 - `MHTML` through Chrome's native page capture API.
 - `Single HTML` with resources inlined as data URLs when they can be fetched.
-- `Web Archive ZIP` with `index.html`, downloaded resources, `metadata.json`, and `text-content.txt`.
+- `Web Archive ZIP` with `index.html`, downloaded resources, `metadata.json`, `text-content.txt`, `text-content.md`, and `messages.json`.
 
 The extension is built to avoid Chrome print/save information loss by scrolling long pages before capture and preserving readable page text for coding agents.
 
@@ -33,7 +33,11 @@ MHTML uses Chrome's native `chrome.pageCapture.saveAsMHTML` API. This is the mos
 
 ### Single HTML
 
-Single HTML snapshots the current DOM, collects images, stylesheets, scripts, fonts, media URLs, CSS `url(...)` references, and CSS `@import` references, then inlines fetched resources as data URLs.
+Single HTML snapshots the current DOM, collects images, stylesheets, scripts, fonts, media URLs, CSS `url(...)` references, and CSS `@import` references, then inlines fetched resources as data URLs. It also embeds agent-readable content in:
+
+- `#web-scanner-readable-markdown` as `text/markdown`
+- `#web-scanner-readable-text` as plain text
+- `#web-scanner-readable-messages` as structured JSON role blocks
 
 ### Web Archive ZIP
 
@@ -42,6 +46,8 @@ Web Archive ZIP writes a portable archive with:
 - `index.html`
 - `metadata.json`
 - `text-content.txt`
+- `text-content.md`
+- `messages.json`
 - `resources/*`
 
 The HTML points to files under `resources/`, making it easier for tools and coding agents to inspect both rendered HTML and extracted text.
@@ -72,6 +78,8 @@ For very large apps, Single HTML can be slow because every render resource must 
 ## Development
 
 This project has no build step and no external runtime dependencies. Edit files directly and reload the unpacked extension in `chrome://extensions`.
+
+Downloads default to the active tab title, preserving non-ASCII titles such as Chinese page names while filtering only filesystem-invalid characters.
 
 Useful validation commands:
 

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.2.0 - 2026-05-30
+
+- Added agent-readable Markdown and structured message JSON to Single HTML exports.
+- Added `text-content.md` and `messages.json` to Web Archive ZIP exports.
+- Changed default download names to preserve the active tab title, including non-ASCII titles, while filtering only filesystem-invalid characters.
+
 ## 0.1.1 - 2026-05-30
 
 - Fixed MHTML downloads being treated as plain text by wrapping native Chrome output as `application/x-mimearchive`.

@@ -53,13 +53,17 @@
       const resourceUrls = collectResourceUrls(document, baseUrl);
       normalizeCloneUrls(clone, baseUrl);
 
+      const readable = options.includeReadableText ? collectReadableContent(document) : emptyReadableContent();
+
       return {
         archiveVersion: options.archiveVersion,
         url: location.href,
         title: document.title,
         baseUrl,
         html: clone.outerHTML,
-        readableText: options.includeReadableText ? collectReadableText(document) : "",
+        readableText: readable.text,
+        readableMarkdown: readable.markdown,
+        readableMessages: readable.messages,
         dimensions: {
           viewportWidth: window.innerWidth,
           viewportHeight: window.innerHeight,
@@ -316,7 +320,25 @@
     return "resource";
   }
 
-  function collectReadableText(sourceDocument) {
+  function collectReadableContent(sourceDocument) {
+    const lines = collectReadableLines(sourceDocument);
+    const messages = parseConversationMessages(lines);
+    return {
+      text: lines.join("\n"),
+      markdown: buildReadableMarkdown(sourceDocument, lines, messages),
+      messages
+    };
+  }
+
+  function emptyReadableContent() {
+    return {
+      text: "",
+      markdown: "",
+      messages: []
+    };
+  }
+
+  function collectReadableLines(sourceDocument) {
     const root = readableRoot(sourceDocument);
     const walker = sourceDocument.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
       acceptNode(node) {
@@ -340,7 +362,7 @@
       }
     }
 
-    return lines.join("\n");
+    return collapseRepeatedLines(lines);
   }
 
   function readableRoot(sourceDocument) {
@@ -367,5 +389,82 @@
       return true;
     }
     return false;
+  }
+
+  function collapseRepeatedLines(lines) {
+    const output = [];
+    for (const line of lines) {
+      if (output[output.length - 1] !== line) {
+        output.push(line);
+      }
+    }
+    return output;
+  }
+
+  function parseConversationMessages(lines) {
+    const messages = [];
+    let current = null;
+
+    for (const line of lines) {
+      const role = markerRole(line);
+      if (role) {
+        if (current && current.lines.length) {
+          messages.push(finalizeMessage(current));
+        }
+        current = { role, lines: [] };
+        continue;
+      }
+
+      if (!current) {
+        current = { role: "content", lines: [] };
+      }
+      if (line === "Thought for a few seconds" || /^Thought for \d+s$/.test(line) || line === "Stopped thinking") {
+        continue;
+      }
+      current.lines.push(line);
+    }
+
+    if (current && current.lines.length) {
+      messages.push(finalizeMessage(current));
+    }
+
+    return messages;
+  }
+
+  function markerRole(line) {
+    if (line === "You said:") {
+      return "user";
+    }
+    if (line === "ChatGPT said:") {
+      return "assistant";
+    }
+    return "";
+  }
+
+  function finalizeMessage(message) {
+    return {
+      role: message.role,
+      text: message.lines.join("\n")
+    };
+  }
+
+  function buildReadableMarkdown(sourceDocument, lines, messages) {
+    const title = sourceDocument.title || "Untitled page";
+    const url = location.href;
+    const parts = [`# ${title}`, "", `Source: ${url}`, ""];
+
+    if (messages.length >= 2) {
+      for (const message of messages) {
+        parts.push(`## ${message.role === "user" ? "User" : message.role === "assistant" ? "Assistant" : "Content"}`);
+        parts.push("");
+        parts.push(message.text);
+        parts.push("");
+      }
+    } else {
+      parts.push(lines.join("\n"));
+      parts.push("");
+    }
+
+    return parts.join("\n").trim();
   }
 })();
