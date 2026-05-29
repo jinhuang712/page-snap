@@ -103,14 +103,14 @@
 
     for (const element of sourceDocument.querySelectorAll("link[href]")) {
       const rel = (element.getAttribute("rel") || "").toLowerCase();
-      const kind = rel.includes("stylesheet")
-        ? "stylesheet"
-        : rel.includes("icon")
-          ? "image"
-          : rel.includes("preload") || rel.includes("prefetch")
-            ? element.getAttribute("as") || "resource"
-            : "resource";
-      add(element.href, kind);
+      const preloadAs = (element.getAttribute("as") || "").toLowerCase();
+      if (rel.includes("stylesheet")) {
+        add(element.href, "stylesheet", "text/css");
+      } else if (rel.includes("icon") || rel.includes("apple-touch-icon")) {
+        add(element.href, "image");
+      } else if (rel.includes("preload") && ["font", "image", "style", "script"].includes(preloadAs)) {
+        add(element.href, preloadAs === "style" ? "stylesheet" : preloadAs);
+      }
     }
 
     for (const element of sourceDocument.scripts) {
@@ -317,14 +317,14 @@
   }
 
   function collectReadableText(sourceDocument) {
-    const walker = sourceDocument.createTreeWalker(sourceDocument.body || sourceDocument.documentElement, NodeFilter.SHOW_TEXT, {
+    const root = readableRoot(sourceDocument);
+    const walker = sourceDocument.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
       acceptNode(node) {
         const parent = node.parentElement;
         if (!parent) {
           return NodeFilter.FILTER_REJECT;
         }
-        const tagName = parent.tagName.toLowerCase();
-        if (["script", "style", "noscript", "template"].includes(tagName)) {
+        if (isNoisyTextNode(parent)) {
           return NodeFilter.FILTER_REJECT;
         }
         return node.nodeValue.trim() ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
@@ -341,5 +341,31 @@
     }
 
     return lines.join("\n");
+  }
+
+  function readableRoot(sourceDocument) {
+    return (
+      sourceDocument.querySelector("main article") ||
+      sourceDocument.querySelector("article") ||
+      sourceDocument.querySelector("main") ||
+      sourceDocument.querySelector("[role='main']") ||
+      sourceDocument.body ||
+      sourceDocument.documentElement
+    );
+  }
+
+  function isNoisyTextNode(element) {
+    const tagName = element.tagName.toLowerCase();
+    if (["script", "style", "noscript", "template", "nav", "header", "footer", "svg"].includes(tagName)) {
+      return true;
+    }
+    if (element.closest("nav, header, footer, aside, menu, [role='navigation'], [aria-hidden='true']")) {
+      return true;
+    }
+    const text = element.textContent.trim();
+    if (text.length <= 2 && element.closest("button, [role='button'], a")) {
+      return true;
+    }
+    return false;
   }
 })();

@@ -1,10 +1,11 @@
 import { createZip } from "./zip-store.js";
 
-const ARCHIVE_VERSION = "0.1.0";
+const ARCHIVE_VERSION = "0.1.1";
 const MAX_SCROLL_STEPS = 80;
 const SCROLL_SETTLE_MS = 180;
 const RESOURCE_TIMEOUT_MS = 15000;
 const MAX_RESOURCE_COUNT = 1500;
+const RESOURCE_CONCURRENCY = 8;
 const OBJECT_URL_REVOKE_MS = 120000;
 
 const params = new URLSearchParams(location.search);
@@ -127,7 +128,8 @@ async function saveMhtml(targetTabId, tab) {
   }
 
   const filename = `${archiveBaseName(tab)}.mhtml`;
-  await downloadBlob(mhtmlBlob, filename, "Save MHTML archive");
+  const typedBlob = new Blob([mhtmlBlob], { type: "application/x-mimearchive" });
+  await downloadBlob(typedBlob, filename, "Save MHTML archive");
   return { filename };
 }
 
@@ -221,22 +223,29 @@ async function fetchResources(initialResources) {
   const resources = [];
   const queue = dedupeResources(initialResources);
   const queued = new Set(queue.map((resource) => resource.url));
+  let cursor = 0;
 
-  for (let index = 0; index < queue.length && resources.length < MAX_RESOURCE_COUNT; index += 1) {
-    const resource = queue[index];
-    setStage(`Fetching resource ${resources.length + 1} of ${queue.length}.`, progressForFetch(index, queue.length));
-    const fetched = await fetchResource(resource, resources.length);
-    resources.push(fetched);
+  async function worker() {
+    while (cursor < queue.length && cursor < MAX_RESOURCE_COUNT) {
+      const queueIndex = cursor;
+      const resource = queue[cursor];
+      cursor += 1;
+      setStage(`Fetching resource ${Math.min(resources.length + 1, MAX_RESOURCE_COUNT)} of ${queue.length}.`, progressForFetch(queueIndex, queue.length));
+      const fetched = await fetchResource(resource, queueIndex);
+      resources.push(fetched);
 
-    if (isCssResource(fetched) && fetched.ok) {
-      for (const cssReference of extractCssReferences(decodeText(fetched.bytes), fetched.url)) {
-        if (!queued.has(cssReference.url)) {
-          queued.add(cssReference.url);
-          queue.push(cssReference);
+      if (isCssResource(fetched) && fetched.ok) {
+        for (const cssReference of extractCssReferences(decodeText(fetched.bytes), fetched.url)) {
+          if (!queued.has(cssReference.url)) {
+            queued.add(cssReference.url);
+            queue.push(cssReference);
+          }
         }
       }
     }
   }
+
+  await Promise.all(Array.from({ length: RESOURCE_CONCURRENCY }, () => worker()));
 
   if (queue.length >= MAX_RESOURCE_COUNT) {
     appendLog(`Resource limit reached at ${MAX_RESOURCE_COUNT}; remaining resources were skipped.`);
@@ -356,6 +365,7 @@ function buildStandaloneHtml(snapshot, resources, mode) {
   const archiveDocument = parser.parseFromString(snapshot.html, "text/html");
 
   injectArchiveMetadata(archiveDocument, snapshot, resources);
+  removeNonRenderingLinks(archiveDocument);
   rewriteDocumentUrls(archiveDocument, resourceMap, mode, snapshot.baseUrl);
   removeExtensionScripts(archiveDocument);
 
@@ -468,6 +478,29 @@ function removeExtensionScripts(archiveDocument) {
     const src = script.getAttribute("src") || "";
     if (src.startsWith("chrome-extension://")) {
       script.remove();
+    }
+  }
+}
+
+function removeNonRenderingLinks(archiveDocument) {
+  const removableRels = new Set([
+    "alternate",
+    "canonical",
+    "dns-prefetch",
+    "manifest",
+    "modulepreload",
+    "preconnect",
+    "prefetch",
+    "prerender"
+  ]);
+
+  for (const link of archiveDocument.querySelectorAll("link[rel]")) {
+    const rels = (link.getAttribute("rel") || "")
+      .toLowerCase()
+      .split(/\s+/)
+      .filter(Boolean);
+    if (rels.some((rel) => removableRels.has(rel))) {
+      link.remove();
     }
   }
 }

@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Lossless Web Scanner",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Save the current page as MHTML, self-contained HTML, or a portable Web Archive ZIP.",
   "permissions": [
     "activeTab",

@@ -55,6 +55,12 @@ The HTML points to files under `resources/`, making it easier for tools and codi
 - ZIP uses store-only entries to keep the extension small and dependency-free. Archive size is close to the total captured resource size.
 - Resource capture is capped at 1500 URLs per page to avoid runaway infinite-scroll or ad-heavy pages.
 
+## Troubleshooting
+
+If an MHTML download appears as `.txt`, inspect the first lines. A valid MHTML file starts with `From: <Saved by Blink>` and `Content-Type: multipart/related`. Version `0.1.1` wraps Chrome's native MHTML blob with `application/x-mimearchive` and a forced `.mhtml` filename to prevent Chrome/macOS from treating it as plain text.
+
+For very large apps, Single HTML can be slow because every render resource must be fetched and inlined. Use MHTML for highest visual fidelity, and use Web Archive ZIP when a coding agent needs `text-content.txt`.
+
 ## Smoke Fixture
 
 `test-fixtures/sample-page.html` is a local page for manual testing. Open it in Chrome, run each archive format, and confirm:
