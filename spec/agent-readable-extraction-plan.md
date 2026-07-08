@@ -87,14 +87,15 @@ import { test } from "node:test";
 
 test("harness loads webScanner onto the jsdom window", () => {
   const win = loadExtractor("<!doctype html><html><body><p>hi</p></body></html>");
-  assert.equal(typeof win.__webScanner.extractReadable, "function");
+  assert.ok(win.__webScanner, "window.__webScanner should be defined");
+  assert.equal(typeof win.__webScanner.collectPageSnapshot, "function");
 });
 ```
 
 - [ ] **Step 4: Run the test to verify it passes**
 
 Run: `npm run check`
-Expected: all tests pass, including the new harness test. (Note: `extractReadable` does not exist yet on `window.__webScanner` — see Task 2. If this test fails because `extractReadable` is undefined, that is expected until Task 2 Step 2; proceed to Task 2 and return.)
+Expected: all tests pass, including the new harness test.
 
 - [ ] **Step 5: Commit**
 
@@ -158,7 +159,7 @@ test("extractReadable keeps list items on separate lines without markdown marker
     <main><ul><li>Apple</li><li>Banana</li></ul></main>
   </body></html>`);
   const text = win.__webScanner.extractReadable(win.document.querySelector("main"));
-  assert.equal(text, "Apple\n\nBanana");
+  assert.equal(text, "Apple\nBanana");
 });
 ```
 
@@ -218,16 +219,16 @@ In `lib/content-snapshot.js`, add these functions inside the IIFE (before the cl
   }
 
   function isInNoise(node) {
-    let parent = node.parentElement;
-    while (parent) {
-      const tag = parent.tagName.toLowerCase();
+    let current = node;
+    while (current && current.tagName) {
+      const tag = current.tagName.toLowerCase();
       if (tag === "nav" || tag === "header" || tag === "footer" || tag === "aside" || tag === "menu") {
         return true;
       }
-      if (parent.getAttribute && (parent.getAttribute("aria-hidden") === "true" || parent.getAttribute("role") === "navigation")) {
+      if (current.getAttribute && (current.getAttribute("aria-hidden") === "true" || current.getAttribute("role") === "navigation")) {
         return true;
       }
-      parent = parent.parentElement;
+      current = current.parentElement;
     }
     return false;
   }
