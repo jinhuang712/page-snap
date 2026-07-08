@@ -61,3 +61,34 @@ test("extractReadable keeps list items on separate lines without markdown marker
   const text = win.__webScanner.extractReadable(win.document.querySelector("main"));
   assert.equal(text, "Apple\nBanana");
 });
+
+test("detectConversation splits turns by role using a config", () => {
+  const win = loadExtractor(`<!doctype html><html><body>
+    <main>
+      <div data-turn data-role="user">What is 1+1?</div>
+      <div data-turn data-role="assistant">It is 2.</div>
+    </main></body></html>`);
+  const config = { name: "s", urlMatch: /.*/, turnSelector: "[data-turn]", roleFrom: (el) => el.getAttribute("data-role") };
+  const messages = win.__webScanner.detectConversation(win.document.querySelector("main"), [config]);
+  assert.deepEqual(JSON.parse(JSON.stringify(messages)), [
+    { role: "user", text: "What is 1+1?" },
+    { role: "assistant", text: "It is 2." }
+  ]);
+});
+
+test("detectConversation returns empty array when no config matches", () => {
+  const win = loadExtractor(`<!doctype html><html><body><main><p>not a chat</p></main></body></html>`);
+  assert.deepEqual(JSON.parse(JSON.stringify(win.__webScanner.detectConversation(win.document.querySelector("main"), []))), []);
+});
+
+test("detectConversation preserves code inside an assistant turn", () => {
+  const win = loadExtractor(`<!doctype html><html><body>
+    <main>
+      <div data-turn data-role="user">show code</div>
+      <div data-turn data-role="assistant"><pre>const x = 1;
+const y = 2;</pre></div>
+    </main></body></html>`);
+  const config = { name: "s", urlMatch: /.*/, turnSelector: "[data-turn]", roleFrom: (el) => el.getAttribute("data-role") };
+  const messages = win.__webScanner.detectConversation(win.document.querySelector("main"), [config]);
+  assert.equal(messages[1].text, "const x = 1;\nconst y = 2;");
+});
