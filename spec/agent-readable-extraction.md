@@ -33,7 +33,7 @@ Walk the readable root (`main article` -> `article` -> `main` -> `[role='main']`
 | Block (`p`, `div`, `li`, `h1`-`h6`, `blockquote`, `tr`, `ul`, etc.) | Recurse, then line break. Blank line between top-level blocks. |
 | `<br>` | Line break. |
 | Inline (`span`, `a`, `strong`, `em`, `code` outside `<pre>`) | Recurse, no break. |
-| Text node (outside `<pre>`) | Collapse spaces/tabs to one; trim line edges. |
+| Text node (outside `<pre>`) | Collapse all whitespace to a single space (matches HTML rendering; non-pre newlines are non-semantic). |
 | `script`, `style`, `noscript`, `template`, `svg` | Skip. |
 | Inside `nav`, `header`, `footer`, `aside`, `menu`, `[role='navigation']`, `[aria-hidden='true']` | Skip (noise filter). |
 
