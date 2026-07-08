@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { Buffer } from "node:buffer";
-import { createZip } from "../zip-store.js";
+import { createZip } from "../lib/zip-store.js";
 
 const zip = createZip([
   { path: "index.html", data: new TextEncoder().encode("<h1>ok</h1>") },

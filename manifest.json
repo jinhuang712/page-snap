@@ -14,6 +14,6 @@
   ],
   "action": {
     "default_title": "Save page archive",
-    "default_popup": "popup.html"
+    "default_popup": "popup/popup.html"
   }
 }

@@ -1,5 +1,5 @@
-import { createZip } from "./zip-store.js";
-import { sanitizeFileName } from "./archive-utils.js";
+import { createZip } from "../lib/zip-store.js";
+import { sanitizeFileName } from "../lib/archive-utils.js";
 
 const ARCHIVE_VERSION = "0.2.0";
 const MAX_SCROLL_STEPS = 80;
@@ -103,7 +103,7 @@ function isArchiveableUrl(url) {
 async function injectSnapshotCollector(targetTabId) {
   await chrome.scripting.executeScript({
     target: { tabId: targetTabId },
-    files: ["content-snapshot.js"]
+    files: ["lib/content-snapshot.js"]
   });
 }
 

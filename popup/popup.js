@@ -31,7 +31,7 @@ saveButton.addEventListener("click", async () => {
       includeReadableText: includeReadableTextInput.checked ? "1" : "0"
     });
     await chrome.windows.create({
-      url: chrome.runtime.getURL(`runner.html?${params.toString()}`),
+      url: chrome.runtime.getURL(`runner/runner.html?${params.toString()}`),
       type: "popup",
       width: 430,
       height: 570,

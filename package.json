@@ -4,6 +4,6 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "check": "python3 -m json.tool manifest.json >/dev/null && node --check popup.js && node --check runner.js && node --check content-snapshot.js && node --check zip-store.js && node --check archive-utils.js && node --test tests/zip-smoke.test.mjs tests/archive-utils.test.mjs && git diff --check"
+    "check": "python3 -m json.tool manifest.json >/dev/null && node --check popup/popup.js && node --check runner/runner.js && node --check lib/content-snapshot.js && node --check lib/zip-store.js && node --check lib/archive-utils.js && node --test tests/zip-smoke.test.mjs tests/archive-utils.test.mjs && git diff --check"
   }
 }

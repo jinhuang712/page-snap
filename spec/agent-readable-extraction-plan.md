@@ -4,7 +4,7 @@
 
 **Goal:** Replace the garbled derived text layer with non-destructive extraction and DOM-based conversation detection, dropping the fake markdown output.
 
-**Architecture:** All logic stays in `content-snapshot.js` (single injected file, no build step). New pure functions (`extractReadable`, `detectConversation`) are exposed on `window.__webScanner` so they can be unit-tested in jsdom by eval'ing the file. `runner.js` drops the markdown file/embed and regenerates `.txt`/`messages.json` via the new functions.
+**Architecture:** All logic stays in `lib/content-snapshot.js` (single injected file, no build step). New pure functions (`extractReadable`, `detectConversation`) are exposed on `window.__webScanner` so they can be unit-tested in jsdom by eval'ing the file. `runner/runner.js` drops the markdown file/embed and regenerates `.txt`/`messages.json` via the new functions.
 
 **Tech Stack:** Manifest V3 Chrome extension, vanilla JS (no runtime deps), `node --test` for tests, `jsdom` as a devDependency (test-only; extension runtime stays zero-dependency).
 
@@ -13,7 +13,7 @@
 ## Global Constraints
 
 - No runtime dependencies; no build step. `jsdom` is a devDependency only (not shipped with the extension).
-- Single injected content script: `content-snapshot.js`. Do not split into multiple injected files.
+- Single injected content script: `lib/content-snapshot.js`. Do not split into multiple injected files.
 - No markdown syntax anywhere in derived output (no ` ``` `, `**`, `#`, `- ` prefixes).
 - `<pre>` content is always verbatim (newlines, indentation, consecutive spaces preserved).
 - All three export formats (MHTML / Single HTML / ZIP) retained; MHTML unchanged.
@@ -23,8 +23,8 @@
 
 ## File Structure
 
-- **Modify** `content-snapshot.js` — replace `collectReadableLines`, `parseConversationMessages`, `buildReadableMarkdown`, `markerRole`, `finalizeMessage`, `collectReadableContent`, `emptyReadableContent`, `collapseRepeatedLines`, `isNoisyTextNode`, `readableRoot` with `extractReadable`, `detectConversation`, `SITE_CONFIGS`, and helpers. Expose `extractReadable` and `detectConversation` on `window.__webScanner`.
-- **Modify** `runner.js` — drop `text-content.md` from ZIP; drop `#web-scanner-readable-markdown` embed; update `metadata.json` `readableText` (remove `markdownChars`); drop `readableMarkdown` usage.
+- **Modify** `lib/content-snapshot.js` — replace `collectReadableLines`, `parseConversationMessages`, `buildReadableMarkdown`, `markerRole`, `finalizeMessage`, `collectReadableContent`, `emptyReadableContent`, `collapseRepeatedLines`, `isNoisyTextNode`, `readableRoot` with `extractReadable`, `detectConversation`, `SITE_CONFIGS`, and helpers. Expose `extractReadable` and `detectConversation` on `window.__webScanner`.
+- **Modify** `runner/runner.js` — drop `text-content.md` from ZIP; drop `#web-scanner-readable-markdown` embed; update `metadata.json` `readableText` (remove `markdownChars`); drop `readableMarkdown` usage.
 - **Modify** `package.json` — add `jsdom` devDependency; add new test file to `check`.
 - **Create** `tests/readable-extract.test.mjs` — jsdom-backed tests for extraction + detection.
 - **Modify** `README.md`, `CHANGELOG.md` — reflect dropped `.md` output and new extraction.
@@ -38,7 +38,7 @@
 - Create: `tests/readable-extract.test.mjs`
 
 **Interfaces:**
-- Produces: a `loadExtractor(html)` helper in the test file that returns a jsdom `window` with `content-snapshot.js` evaluated, so `window.__webScanner` is available.
+- Produces: a `loadExtractor(html)` helper in the test file that returns a jsdom `window` with `lib/content-snapshot.js` evaluated, so `window.__webScanner` is available.
 
 - [ ] **Step 1: Add jsdom devDependency and wire the new test into `check`**
 
@@ -51,7 +51,7 @@ Replace `package.json` with:
   "private": true,
   "type": "module",
   "scripts": {
-    "check": "python3 -m json.tool manifest.json >/dev/null && node --check popup.js && node --check runner.js && node --check content-snapshot.js && node --check zip-store.js && node --check archive-utils.js && node --test tests/zip-smoke.test.mjs tests/archive-utils.test.mjs tests/readable-extract.test.mjs && git diff --check"
+    "check": "python3 -m json.tool manifest.json >/dev/null && node --check popup/popup.js && node --check runner/runner.js && node --check lib/content-snapshot.js && node --check lib/zip-store.js && node --check lib/archive-utils.js && node --test tests/zip-smoke.test.mjs tests/archive-utils.test.mjs tests/readable-extract.test.mjs && git diff --check"
   },
   "devDependencies": {
     "jsdom": "^24.0.0"
@@ -74,7 +74,7 @@ import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { JSDOM } from "jsdom";
 
-const sourcePath = fileURLToPath(new URL("../content-snapshot.js", import.meta.url));
+const sourcePath = fileURLToPath(new URL("../lib/content-snapshot.js", import.meta.url));
 const source = readFileSync(sourcePath, "utf8");
 
 function loadExtractor(html) {
@@ -108,7 +108,7 @@ git commit -m "test: add jsdom harness for readable extraction"
 ### Task 2: Non-destructive text extraction
 
 **Files:**
-- Modify: `content-snapshot.js` (add `extractReadable` + helpers; expose on `window.__webScanner`)
+- Modify: `lib/content-snapshot.js` (add `extractReadable` + helpers; expose on `window.__webScanner`)
 - Test: `tests/readable-extract.test.mjs`
 
 **Interfaces:**
@@ -169,7 +169,7 @@ Expected: FAIL — `win.__webScanner.extractReadable` is `undefined`.
 
 - [ ] **Step 3: Implement `extractReadable` and expose it**
 
-In `content-snapshot.js`, add these functions inside the IIFE (before the closing `})()`), and add `extractReadable` to the `window.__webScanner` object:
+In `lib/content-snapshot.js`, add these functions inside the IIFE (before the closing `})()`), and add `extractReadable` to the `window.__webScanner` object:
 
 ```js
   const SKIPPABLE_TAGS = new Set(["script", "style", "noscript", "template", "svg"]);
@@ -256,7 +256,7 @@ Expected: PASS (all existing + new tests, syntax checks, git diff clean).
 - [ ] **Step 6: Commit**
 
 ```bash
-git add content-snapshot.js tests/readable-extract.test.mjs
+git add lib/content-snapshot.js tests/readable-extract.test.mjs
 git commit -m "feat: non-destructive readable text extraction"
 ```
 
@@ -265,7 +265,7 @@ git commit -m "feat: non-destructive readable text extraction"
 ### Task 3: Conversation detection
 
 **Files:**
-- Modify: `content-snapshot.js` (add `SITE_CONFIGS`, `detectConversation`; expose on `window.__webScanner`)
+- Modify: `lib/content-snapshot.js` (add `SITE_CONFIGS`, `detectConversation`; expose on `window.__webScanner`)
 - Test: `tests/readable-extract.test.mjs`
 
 **Interfaces:**
@@ -316,7 +316,7 @@ Expected: FAIL - `win.__webScanner.detectConversation` is `undefined`.
 
 - [ ] **Step 3: Implement `SITE_CONFIGS` and `detectConversation`; expose it**
 
-Add inside the `content-snapshot.js` IIFE (after `extractReadable`/`isInNoise` from Task 2):
+Add inside the `lib/content-snapshot.js` IIFE (after `extractReadable`/`isInNoise` from Task 2):
 
 ```js
   const SITE_CONFIGS = [
@@ -384,7 +384,7 @@ Expected: PASS.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add content-snapshot.js tests/readable-extract.test.mjs
+git add lib/content-snapshot.js tests/readable-extract.test.mjs
 git commit -m "feat: DOM-based conversation detection"
 ```
 
@@ -397,10 +397,10 @@ The `SITE_CONFIGS` selectors above are best-known starting points and must be co
 ### Task 4: Wire extraction into `collectPageSnapshot`; remove dead readable-text code
 
 **Files:**
-- Modify: `content-snapshot.js`
+- Modify: `lib/content-snapshot.js`
 
 **Interfaces:**
-- Produces: `collectPageSnapshot` return object no longer has `readableMarkdown`; `readableText` and `readableMessages` come from the new functions. Downstream (`runner.js`) must stop reading `readableMarkdown` (Task 5).
+- Produces: `collectPageSnapshot` return object no longer has `readableMarkdown`; `readableText` and `readableMessages` come from the new functions. Downstream (`runner/runner.js`) must stop reading `readableMarkdown` (Task 5).
 
 - [ ] **Step 1: Rewrite `collectPageSnapshot` to use the new functions**
 
@@ -441,30 +441,30 @@ Replace the existing `collectPageSnapshot` function body with:
 
 - [ ] **Step 2: Delete the now-dead readable-text functions**
 
-Remove these functions entirely from `content-snapshot.js`: `collectReadableContent`, `emptyReadableContent`, `collectReadableLines`, `parseConversationMessages`, `markerRole`, `finalizeMessage`, `buildReadableMarkdown`, `collapseRepeatedLines`, `isNoisyTextNode`. Keep `readableRoot` (still used above) and `pageScrollHeight`.
+Remove these functions entirely from `lib/content-snapshot.js`: `collectReadableContent`, `emptyReadableContent`, `collectReadableLines`, `parseConversationMessages`, `markerRole`, `finalizeMessage`, `buildReadableMarkdown`, `collapseRepeatedLines`, `isNoisyTextNode`. Keep `readableRoot` (still used above) and `pageScrollHeight`.
 
 - [ ] **Step 3: Verify syntax and tests**
 
 Run: `npm run check`
-Expected: PASS (note: `runner.js` still references `snapshot.readableMarkdown`, but `node --check` only checks syntax, not references, so this passes; Task 5 removes those references).
+Expected: PASS (note: `runner/runner.js` still references `snapshot.readableMarkdown`, but `node --check` only checks syntax, not references, so this passes; Task 5 removes those references).
 
 - [ ] **Step 4: Commit**
 
 ```bash
-git add content-snapshot.js
+git add lib/content-snapshot.js
 git commit -m "refactor: wire non-destructive extraction into collectPageSnapshot"
 ```
 
 ---
 
-### Task 5: Drop markdown output from `runner.js`
+### Task 5: Drop markdown output from `runner/runner.js`
 
 **Files:**
-- Modify: `runner.js`
+- Modify: `runner/runner.js`
 
 - [ ] **Step 1: Remove the `text-content.md` entry from the ZIP files list**
 
-In `saveZipArchive` (`runner.js:147`), delete this object from the `files` array:
+In `saveZipArchive` (`runner/runner.js:147`), delete this object from the `files` array:
 
 ```js
     {
@@ -475,7 +475,7 @@ In `saveZipArchive` (`runner.js:147`), delete this object from the `files` array
 
 - [ ] **Step 2: Remove the markdown script embed from `injectArchiveMetadata`**
 
-In `injectArchiveMetadata` (`runner.js:385`), delete this entire block:
+In `injectArchiveMetadata` (`runner/runner.js:385`), delete this entire block:
 
 ```js
   if (snapshot.readableMarkdown) {
@@ -490,7 +490,7 @@ In `injectArchiveMetadata` (`runner.js:385`), delete this entire block:
 
 - [ ] **Step 3: Drop `markdownChars` from `buildMetadata`**
 
-In `buildMetadata` (`runner.js:428`), replace the `readableText` block:
+In `buildMetadata` (`runner/runner.js:428`), replace the `readableText` block:
 
 ```js
     readableText: {
@@ -511,7 +511,7 @@ with:
 
 - [ ] **Step 4: Verify no remaining `readableMarkdown` references**
 
-Run: `grep -n "readableMarkdown\|text-content.md\|web-scanner-readable-markdown" runner.js`
+Run: `grep -n "readableMarkdown\|text-content.md\|web-scanner-readable-markdown" runner/runner.js`
 Expected: no output.
 
 - [ ] **Step 5: Run full check**
@@ -522,7 +522,7 @@ Expected: PASS.
 - [ ] **Step 6: Commit**
 
 ```bash
-git add runner.js
+git add runner/runner.js
 git commit -m "feat: drop markdown output from archives"
 ```
 
@@ -577,8 +577,8 @@ git commit -m "docs: update for non-destructive extraction and markdown removal"
 - Non-goal 3 (no derived layer in MHTML): MHTML path (`saveMhtml`) untouched.
 - Non-goal 5 (messages stay `{role, text}`): Task 3 produces exactly that shape.
 - Output changes table: Task 4 (snapshot fields), Task 5 (runner outputs + metadata), Task 6 (docs).
-- Implementation notes (selector verification, code location in `content-snapshot.js`, `node --test`): Tasks 1, 3 Step 7, throughout.
+- Implementation notes (selector verification, code location in `lib/content-snapshot.js`, `node --test`): Tasks 1, 3 Step 7, throughout.
 
 **Placeholder scan:** Site selectors in `SITE_CONFIGS` are concrete starting values with a mandatory live-verification step (Task 3 Step 7), not placeholders. Gemini is explicitly added during that verification step (its DOM is opaque and must be captured live). No TBD/TODO elsewhere.
 
-**Type consistency:** `extractReadable(rootNode): string` and `detectConversation(rootNode, configs?): Array<{role, text}>` signatures are consistent across Tasks 2, 3, 4. `window.__webScanner` exports updated once in Task 2 and again in Task 3 (additive). `collectPageSnapshot` drops `readableMarkdown` in Task 4; Task 5 removes all `readableMarkdown` readers in `runner.js`.
+**Type consistency:** `extractReadable(rootNode): string` and `detectConversation(rootNode, configs?): Array<{role, text}>` signatures are consistent across Tasks 2, 3, 4. `window.__webScanner` exports updated once in Task 2 and again in Task 3 (additive). `collectPageSnapshot` drops `readableMarkdown` in Task 4; Task 5 removes all `readableMarkdown` readers in `runner/runner.js`.
