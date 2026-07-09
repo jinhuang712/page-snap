@@ -13,7 +13,7 @@ The extension is built to avoid Chrome print/save information loss by scrolling 
 1. Open `chrome://extensions`.
 2. Enable **Developer mode**.
 3. Click **Load unpacked**.
-4. Choose this folder: `/Users/huangjin/dev/tools/pagesnap`.
+4. Choose this folder: `/Users/huangjin/dev/tools/page-snap`.
 
 The `.git` directory does not affect loading the extension. Chrome loads the unpacked extension from `manifest.json` and the listed extension files.
 
