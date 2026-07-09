@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
+import { test } from "node:test";
 import { JSDOM } from "jsdom";
 
 const sourcePath = fileURLToPath(new URL("../lib/content-snapshot.js", import.meta.url));
@@ -11,8 +12,6 @@ function loadExtractor(html) {
   dom.window.eval(source);
   return dom.window;
 }
-
-import { test } from "node:test";
 
 test("harness loads webScanner onto the jsdom window", () => {
   const win = loadExtractor("<!doctype html><html><body><p>hi</p></body></html>");
@@ -27,6 +26,18 @@ test("extractReadable preserves <pre> newlines and indentation", () => {
   </body></html>`);
   const text = win.__webScanner.extractReadable(win.document.querySelector("main"));
   assert.equal(text, "def f():\n  return 1");
+});
+
+test("extractReadable preserves <pre> content with 3+ consecutive blank lines", () => {
+  const win = loadExtractor(`<!doctype html><html><body>
+    <main><pre>line1
+
+
+
+line2</pre></main>
+  </body></html>`);
+  const text = win.__webScanner.extractReadable(win.document.querySelector("main"));
+  assert.equal(text, "line1\n\n\n\nline2");
 });
 
 test("extractReadable collapses non-pre whitespace to single spaces", () => {

@@ -1,7 +1,7 @@
 import { createZip } from "../lib/zip-store.js";
 import { sanitizeFileName } from "../lib/archive-utils.js";
 
-const ARCHIVE_VERSION = "0.2.0";
+const ARCHIVE_VERSION = "0.3.0";
 const MAX_SCROLL_STEPS = 80;
 const SCROLL_SETTLE_MS = 180;
 const RESOURCE_TIMEOUT_MS = 15000;
