@@ -11,86 +11,82 @@
   :root{--paper:#ECEFF3;--card:#FFFFFF;--ink:#0F1726;--ink-2:#33415A;--data:#56657A;--scan:#1F63F2;--rec:#E0482E;--grid:#D2D9E2;--grid-soft:#E2E7ED;--ok:#15803d}
   *{box-sizing:border-box}
   html,body{margin:0;padding:0}
-  body{font-family:"Space Grotesk",system-ui,sans-serif;background:var(--paper);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased;padding:40px 16px 80px}
+  body{font-family:"Space Grotesk",system-ui,sans-serif;background:var(--paper);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased;padding:44px 16px 90px}
   .mono{font-family:"JetBrains Mono",ui-monospace,monospace}
   a{color:var(--scan);text-decoration:none}
-  .top{display:flex;align-items:center;justify-content:space-between;max-width:760px;margin:0 auto 26px}
+  .top{display:flex;align-items:center;justify-content:space-between;max-width:760px;margin:0 auto 28px}
   .top .mark{display:flex;align-items:center;gap:10px;font-weight:700;font-size:14px;letter-spacing:.04em}
   .top .mark svg{width:20px;height:20px}
   .top .back{font-size:13px;color:var(--ink-2)}
   .stage{max-width:760px;margin:0 auto}
-  h1{font-size:clamp(22px,3.5vw,30px);letter-spacing:-.01em;margin:0 0 6px}
-  .intro{color:var(--ink-2);max-width:60ch;margin:0 0 30px}
+  h1{font-size:clamp(22px,3.5vw,30px);letter-spacing:-.01em;margin:0 0 8px}
+  .intro{color:var(--ink-2);max-width:62ch;margin:0 0 30px}
 
-  /* faux browser chrome to show this IS the popup (no separate window) */
-  .browser{max-width:380px;margin:0 auto;border:1px solid var(--grid);border-radius:14px;overflow:hidden;background:var(--card);box-shadow:0 18px 50px rgba(15,23,38,.12)}
-  .chromebar{display:flex;align-items:center;gap:10px;padding:9px 12px;background:#F2F4F7;border-bottom:1px solid var(--grid)}
-  .chromebar .dots{display:flex;gap:6px}
-  .chromebar .dots i{width:11px;height:11px;border-radius:50%;background:var(--grid);display:block}
-  .chromebar .url{flex:1;height:20px;border-radius:6px;background:#E6EAEF;display:flex;align-items:center;padding:0 9px;font-size:10.5px;color:var(--data)}
-  .chromebar .ic{width:26px;height:26px;border-radius:6px;border:1px solid var(--grid);display:flex;align-items:center;justify-content:center;background:var(--card)}
-  .chromebar .ic svg{width:17px;height:17px}
-  .popup{padding:16px;display:grid;gap:13px;min-height:360px;align-content:start}
+  .where{text-align:center;color:var(--data);font-size:13px;margin:0 auto 14px;max-width:460px}
+  .where b{color:var(--ink-2);font-weight:500}
+
+  /* the popup panel itself = the card (no fake browser chrome) */
+  .popup{max-width:440px;margin:0 auto;background:var(--card);border:1px solid var(--grid);border-radius:16px;padding:22px;display:grid;gap:17px;box-shadow:0 20px 56px rgba(15,23,38,.13);align-content:start}
   .ph{display:flex;align-items:center;justify-content:space-between}
-  .ph .brand{display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px}
-  .ph .brand svg{width:18px;height:18px}
-  .pill{font-family:"JetBrains Mono",monospace;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;border:1px solid var(--grid);border-radius:999px;padding:3px 9px;color:var(--data);background:var(--card)}
+  .ph .brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:14px}
+  .ph .brand svg{width:20px;height:20px}
+  .pill{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;border:1px solid var(--grid);border-radius:999px;padding:5px 10px;color:var(--data);background:var(--card)}
   .pill.busy{color:var(--rec);border-color:#F0C4BB;background:#FBEEE9}
   .pill.done{color:var(--ok);border-color:#BFE3C9;background:#ECFDF3}
   .pill.off{color:var(--data);border-color:var(--grid);background:#EDEFF3}
-  .lbl{margin:0 0 7px;font-family:"JetBrains Mono",monospace;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--data)}
-  .segs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-  .segs button{font:inherit;font-size:12px;font-weight:500;padding:8px 0;border:1px solid var(--grid);background:var(--card);color:var(--ink-2);border-radius:7px;cursor:pointer}
+  .lbl{margin:0 0 9px;font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--data)}
+  .segs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .segs button{font:inherit;font-size:13px;font-weight:500;padding:11px 0;border:1px solid var(--grid);background:var(--card);color:var(--ink-2);border-radius:8px;cursor:pointer}
   .segs button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
-  .sw{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12.5px;color:var(--ink-2);cursor:pointer}
+  .sw{display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:13.5px;color:var(--ink-2);cursor:pointer;padding:3px 0}
   .sw input{display:none}
-  .sw .tk{width:32px;height:18px;border-radius:999px;background:var(--grid);position:relative;flex:none;transition:.12s}
-  .sw .tk::after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:.12s;box-shadow:0 1px 2px rgba(0,0,0,.25)}
+  .sw .tk{width:36px;height:20px;border-radius:999px;background:var(--grid);position:relative;flex:none;transition:.12s}
+  .sw .tk::after{content:"";position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.12s;box-shadow:0 1px 2px rgba(0,0,0,.25)}
   .sw input:checked+.tk{background:var(--scan)}
-  .sw input:checked+.tk::after{transform:translateX(14px)}
-  .btn{width:100%;min-height:38px;border:0;border-radius:8px;background:var(--scan);color:#fff;font:inherit;font-weight:600;font-size:13.5px;cursor:pointer}
+  .sw input:checked+.tk::after{transform:translateX(16px)}
+  .btn{width:100%;min-height:44px;border:0;border-radius:9px;background:var(--scan);color:#fff;font:inherit;font-weight:600;font-size:14px;cursor:pointer}
   .btn:hover{background:#1858D6}
   .btn:disabled{background:#A9B4C0;cursor:not-allowed}
   .btn.ghost{background:var(--card);border:1px solid var(--grid);color:var(--ink)}
   .btn.ghost:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
 
   /* busy view */
-  .vp{position:relative;background:#F2F5F8;border:1px solid var(--grid-soft);border-radius:10px;padding:24px 13px 14px;overflow:hidden}
-  .vp .bk{position:absolute;width:13px;height:13px;border:2px solid var(--scan)}
-  .vp .bk.tl{top:8px;left:8px;border-right:0;border-bottom:0}.vp .bk.tr{top:8px;right:8px;border-left:0;border-bottom:0}
-  .vp .bk.bl{bottom:8px;left:8px;border-right:0;border-top:0}.vp .bk.br{bottom:8px;right:8px;border-left:0;border-top:0}
-  .vp .tg{position:absolute;top:7px;left:50%;transform:translateX(-50%);font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--data)}
-  .vp .stage-t{margin:2px 0 11px;min-height:17px;font-size:12.5px;color:var(--ink)}
+  .vp{position:relative;background:#F2F5F8;border:1px solid var(--grid-soft);border-radius:12px;padding:30px 16px 18px;overflow:hidden}
+  .vp .bk{position:absolute;width:14px;height:14px;border:2px solid var(--scan)}
+  .vp .bk.tl{top:9px;left:9px;border-right:0;border-bottom:0}.vp .bk.tr{top:9px;right:9px;border-left:0;border-bottom:0}
+  .vp .bk.bl{bottom:9px;left:9px;border-right:0;border-top:0}.vp .bk.br{bottom:9px;right:9px;border-left:0;border-top:0}
+  .vp .tg{position:absolute;top:8px;left:50%;transform:translateX(-50%);font-family:"JetBrains Mono",monospace;font-size:9.5px;letter-spacing:.22em;text-transform:uppercase;color:var(--data)}
+  .vp .stage-t{margin:2px 0 14px;min-height:18px;font-size:13px;color:var(--ink)}
   .vp .beam{position:absolute;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--scan) 30%,#BDDBFF 50%,var(--scan) 70%,transparent);box-shadow:0 0 14px 2px rgba(31,99,242,.5);top:40%;opacity:0}
   .vp.live .beam{animation:beam 1.4s ease-in-out infinite}
-  @keyframes beam{0%{top:20%;opacity:0}15%{opacity:1}85%{opacity:1}100%{top:78%;opacity:0}}
-  progress{appearance:none;-webkit-appearance:none;width:100%;height:5px;border:0;border-radius:999px;background:var(--grid);display:block}
+  @keyframes beam{0%{top:22%;opacity:0}15%{opacity:1}85%{opacity:1}100%{top:76%;opacity:0}}
+  progress{appearance:none;-webkit-appearance:none;width:100%;height:6px;border:0;border-radius:999px;background:var(--grid);display:block}
   progress::-webkit-progress-bar{background:var(--grid);border-radius:999px}
   progress::-webkit-progress-value{background:linear-gradient(90deg,var(--scan),#9CC1FF);border-radius:999px;box-shadow:0 0 8px rgba(31,99,242,.5);transition:width .25s}
   progress::-moz-progress-bar{background:linear-gradient(90deg,var(--scan),#9CC1FF);border-radius:999px}
-  .checklist{list-style:none;margin:0;padding:0;display:grid;gap:5px}
-  .checklist li{display:flex;align-items:center;gap:10px;padding:8px 11px;border:1px solid var(--grid);border-radius:8px;background:var(--card);font-size:12px;color:var(--data)}
-  .checklist li .d{width:14px;height:14px;border-radius:50%;border:2px solid var(--grid);flex:none;position:relative}
+  .checklist{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+  .checklist li{display:flex;align-items:center;gap:12px;padding:12px 14px;border:1px solid var(--grid);border-radius:10px;background:var(--card);font-size:13px;color:var(--data)}
+  .checklist li .d{width:15px;height:15px;border-radius:50%;border:2px solid var(--grid);flex:none;position:relative}
   .checklist li.active{color:var(--scan);border-color:#BDD0FB;background:#F2F7FF}
   .checklist li.active .d{border-color:var(--scan);box-shadow:0 0 0 4px rgba(31,99,242,.15)}
   .checklist li.done{color:var(--ink-2)}
   .checklist li.done .d{background:var(--ok);border-color:var(--ok)}
   .checklist li.done .d::after{content:"";position:absolute;left:3px;top:0;width:4px;height:8px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
-  .hint{font-size:11px;color:var(--data);text-align:center;margin:-2px 0 0}
+  .hint{font-size:12px;color:var(--data);text-align:center;margin:0}
   .hint b{color:var(--ink-2);font-weight:500}
 
   /* result */
-  .result{display:grid;gap:14px}
-  .rcard{display:flex;align-items:center;gap:13px;padding:14px;border:1px solid var(--grid);border-radius:11px;background:var(--card)}
-  .rcard .ri{width:38px;height:38px;border-radius:9px;background:#0F1726;display:flex;align-items:center;justify-content:center;flex:none}
-  .rcard .ri svg{width:22px;height:22px}
-  .rcard .rn{font-weight:700;font-size:13.5px;word-break:break-all}
-  .rcard .rm{font-family:"JetBrains Mono",monospace;font-size:10.5px;color:var(--data)}
-  .cancelled{text-align:center;padding:18px 0 6px}
-  .cancelled .ci{width:46px;height:46px;border-radius:50%;background:#FBEEE9;color:var(--rec);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:22px}
-  .cancelled h3{margin:0 0 4px;font-size:16px}
-  .cancelled p{margin:0;color:var(--data);font-size:12.5px}
-  .foot-note{text-align:center;color:var(--data);font-size:12px;max-width:380px;margin:20px auto 0;line-height:1.6}
+  .result{display:grid;gap:16px}
+  .rcard{display:flex;align-items:center;gap:14px;padding:16px;border:1px solid var(--grid);border-radius:12px;background:var(--card)}
+  .rcard .ri{width:42px;height:42px;border-radius:10px;background:#0F1726;display:flex;align-items:center;justify-content:center;flex:none}
+  .rcard .ri svg{width:24px;height:24px}
+  .rcard .rn{font-weight:700;font-size:14px;word-break:break-all}
+  .rcard .rm{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--data);margin-top:2px}
+  .cancelled{text-align:center;padding:22px 0 8px}
+  .cancelled .ci{width:50px;height:50px;border-radius:50%;background:#FBEEE9;color:var(--rec);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:24px}
+  .cancelled h3{margin:0 0 5px;font-size:17px}
+  .cancelled p{margin:0;color:var(--data);font-size:13px}
+  .foot-note{text-align:center;color:var(--data);font-size:12px;max-width:460px;margin:24px auto 0;line-height:1.6}
   @media(prefers-reduced-motion:reduce){.vp .beam{animation:none}}
 </style>
 </head>
@@ -107,73 +103,63 @@
   <h1>Single-popup capture flow</h1>
   <p class="intro">Direction <b>B + C</b>, merged into the popup itself — no separate window. The scan beam + live checklist run inline; the result card replaces the form when done. Click <b>switch tab</b> mid-capture to see the cancel path (a real popup closes on blur, so the scan is abandoned — that's fine).</p>
 
-  <div class="browser">
-    <div class="chromebar">
-      <span class="dots"><i></i><i></i><i></i></span>
-      <span class="url">example.com/long-article</span>
-      <span class="ic"><svg viewBox="0 0 128 128"><g transform="translate(64 64) scale(.8) translate(-64 -64)"><g stroke="#0F1726" stroke-width="11" stroke-linecap="round" fill="none"><path d="M16 36 V16 H36"/><path d="M92 16 H112 V36"/><path d="M16 92 V112 H36"/><path d="M112 92 V112 H92"/></g><path d="M40 30 H80 L88 38 V98 H40 Z" fill="#0F1726"/><line x1="30" y1="66" x2="98" y2="66" stroke="#1F63F2" stroke-width="6"/></g></svg></span>
+  <p class="where">⌄ <b>This is the toolbar popup itself</b> — capture happens here, in one panel.</p>
+
+  <div class="popup" id="popup">
+    <div class="ph">
+      <div class="brand"><svg viewBox="0 0 128 128"><use href="#m"/></svg>PageSnap</div>
+      <span class="pill" id="pill">Ready</span>
     </div>
 
-    <div class="popup" id="popup">
-      <div class="ph">
-        <div class="brand"><svg viewBox="0 0 128 128"><use href="#m"/></svg>PageSnap</div>
-        <span class="pill" id="pill">Ready</span>
-      </div>
-
-      <!-- IDLE -->
-      <div class="view" id="view-idle">
-        <div><p class="lbl">Format</p>
-          <div class="segs" id="segs">
-            <button data-fmt="MHTML" aria-pressed="true">MHTML</button>
-            <button data-fmt="HTML" aria-pressed="false">HTML</button>
-            <button data-fmt="ZIP" aria-pressed="false">ZIP</button>
-          </div>
-        </div>
-        <label class="sw">Scroll full page first<input type="checkbox" checked><span class="tk"></span></label>
-        <label class="sw">Include readable text<input type="checkbox" checked><span class="tk"></span></label>
-        <button class="btn" id="capture">Capture page</button>
-      </div>
-
-      <!-- BUSY -->
-      <div class="view" id="view-busy" style="display:none">
-        <div class="vp live" id="vp">
-          <span class="bk tl"></span><span class="bk tr"></span><span class="bk bl"></span><span class="bk br"></span>
-          <span class="tg">capturing</span>
-          <span class="beam"></span>
-          <div class="stage-t mono" id="stageT">Starting…</div>
-          <progress id="prog" max="100" value="0"></progress>
-        </div>
-        <ul class="checklist" id="checklist">
-          <li class="todo"><span class="d"></span>Scroll full page</li>
-          <li class="todo"><span class="d"></span>Snapshot DOM + readable text</li>
-          <li class="todo"><span class="d"></span>Fetch resources (42)</li>
-          <li class="todo"><span class="d"></span>Pack archive</li>
-          <li class="todo"><span class="d"></span>Save download</li>
-        </ul>
-        <p class="hint">Switch tabs or close → <b>scan is cancelled</b> (a real popup closes on blur).</p>
-        <button class="btn ghost" id="switchAway">⤴ Switch tab / cancel</button>
-      </div>
-
-      <!-- DONE -->
-      <div class="view" id="view-done" style="display:none">
-        <div class="result">
-          <div class="rcard">
-            <div class="ri"><svg viewBox="0 0 128 128"><g transform="translate(64 64) scale(.85) translate(-64 -64)"><path d="M40 30 H80 L88 38 V98 H40 Z" fill="#fff"/><line x1="40" y1="70" x2="88" y2="70" stroke="#1F63F2" stroke-width="6"/><path d="M92 52 a18 18 0 1 1 -18 -18" fill="none" stroke="#7FE3B0" stroke-width="8" stroke-linecap="round"/></g></svg></div>
-            <div><div class="rn" id="resName">page.webarchive.zip</div><div class="rm" id="resMeta">1.2 MB · 42 resources · 1280×800</div></div>
-          </div>
-          <button class="btn" id="again">Capture another page</button>
+    <div class="view" id="view-idle">
+      <div><p class="lbl">Format</p>
+        <div class="segs" id="segs">
+          <button data-fmt="MHTML" aria-pressed="true">MHTML</button>
+          <button data-fmt="HTML" aria-pressed="false">HTML</button>
+          <button data-fmt="ZIP" aria-pressed="false">ZIP</button>
         </div>
       </div>
+      <label class="sw">Scroll full page first<input type="checkbox" checked><span class="tk"></span></label>
+      <label class="sw">Include readable text<input type="checkbox" checked><span class="tk"></span></label>
+      <button class="btn" id="capture">Capture page</button>
+    </div>
 
-      <!-- CANCELLED -->
-      <div class="view" id="view-cancel" style="display:none">
-        <div class="cancelled">
-          <div class="ci">✕</div>
-          <h3>Capture cancelled</h3>
-          <p>The popup closed — nothing was saved. Try again any time.</p>
-        </div>
-        <button class="btn" id="again2" style="margin-top:14px">Start over</button>
+    <div class="view" id="view-busy" style="display:none">
+      <div class="vp live" id="vp">
+        <span class="bk tl"></span><span class="bk tr"></span><span class="bk bl"></span><span class="bk br"></span>
+        <span class="tg">capturing</span>
+        <span class="beam"></span>
+        <div class="stage-t mono" id="stageT">Starting…</div>
+        <progress id="prog" max="100" value="0"></progress>
       </div>
+      <ul class="checklist" id="checklist">
+        <li class="todo"><span class="d"></span>Scroll full page</li>
+        <li class="todo"><span class="d"></span>Snapshot DOM + readable text</li>
+        <li class="todo"><span class="d"></span>Fetch resources (42)</li>
+        <li class="todo"><span class="d"></span>Pack archive</li>
+        <li class="todo"><span class="d"></span>Save download</li>
+      </ul>
+      <p class="hint">Switch tabs or close → <b>scan is cancelled</b> (a real popup closes on blur).</p>
+      <button class="btn ghost" id="switchAway">⤴ Switch tab / cancel</button>
+    </div>
+
+    <div class="view" id="view-done" style="display:none">
+      <div class="result">
+        <div class="rcard">
+          <div class="ri"><svg viewBox="0 0 128 128"><g transform="translate(64 64) scale(.85) translate(-64 -64)"><path d="M40 30 H80 L88 38 V98 H40 Z" fill="#fff"/><line x1="40" y1="70" x2="88" y2="70" stroke="#1F63F2" stroke-width="6"/><path d="M92 52 a18 18 0 1 1 -18 -18" fill="none" stroke="#7FE3B0" stroke-width="8" stroke-linecap="round"/></g></svg></div>
+          <div><div class="rn" id="resName">page.webarchive.zip</div><div class="rm" id="resMeta">1.2 MB · 42 resources · 1280×800</div></div>
+        </div>
+        <button class="btn" id="again">Capture another page</button>
+      </div>
+    </div>
+
+    <div class="view" id="view-cancel" style="display:none">
+      <div class="cancelled">
+        <div class="ci">✕</div>
+        <h3>Capture cancelled</h3>
+        <p>The popup closed — nothing was saved. Try again any time.</p>
+      </div>
+      <button class="btn" id="again2" style="margin-top:16px">Start over</button>
     </div>
   </div>
   <p class="foot-note">Prototype — simulated timing. In the real extension this whole flow lives in <code>popup.html</code>; the separate runner window is removed.</p>
