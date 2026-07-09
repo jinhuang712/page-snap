@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Lossless Web Scanner",
+  "name": "PageSnap",
   "version": "0.3.0",
   "description": "Save the current page as MHTML, self-contained HTML, or a portable Web Archive ZIP.",
   "permissions": [

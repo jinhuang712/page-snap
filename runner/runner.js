@@ -433,7 +433,7 @@ function ensureHead(archiveDocument) {
 
 function buildMetadata(snapshot, resources) {
   return {
-    archivedBy: "Lossless Web Scanner",
+    archivedBy: "PageSnap",
     version: ARCHIVE_VERSION,
     archivedAt: new Date().toISOString(),
     url: snapshot.url,

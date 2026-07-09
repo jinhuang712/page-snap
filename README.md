@@ -1,6 +1,6 @@
-# Lossless Web Scanner
+# PageSnap
 
-Lossless Web Scanner is a small unpacked Chrome extension for saving the current page as:
+PageSnap is a small unpacked Chrome extension for saving the current page as:
 
 - `MHTML` through Chrome's native page capture API.
 - `Single HTML` with resources inlined as data URLs when they can be fetched.
@@ -13,14 +13,14 @@ The extension is built to avoid Chrome print/save information loss by scrolling 
 1. Open `chrome://extensions`.
 2. Enable **Developer mode**.
 3. Click **Load unpacked**.
-4. Choose this folder: `/Users/huangjin/dev/tools/web-scanner`.
+4. Choose this folder: `/Users/huangjin/dev/tools/pagesnap`.
 
 The `.git` directory does not affect loading the extension. Chrome loads the unpacked extension from `manifest.json` and the listed extension files.
 
 ## Usage
 
 1. Open the page you want to archive.
-2. Click the **Web Scanner** extension icon.
+2. Click the **PageSnap** extension icon.
 3. Choose `MHTML`, `Single HTML`, or `Web Archive ZIP`.
 4. Keep **Scroll full page first** enabled for long or lazy-loaded pages.
 5. Click **Save current page**.
