@@ -130,8 +130,8 @@ async function saveMhtml(targetTabId, tab) {
 
   const filename = `${archiveBaseName(tab)}.mhtml`;
   const typedBlob = new Blob([mhtmlBlob], { type: "application/x-mimearchive" });
-  await downloadBlob(typedBlob, filename, "Save MHTML archive");
-  return { filename };
+  const savedAs = await downloadBlob(typedBlob, filename, "Save MHTML archive", "web-archive.mhtml");
+  return { filename: savedAs };
 }
 
 async function saveSingleHtml(snapshot) {
@@ -140,8 +140,8 @@ async function saveSingleHtml(snapshot) {
   prepareResourcesForExport(resources);
   const html = buildStandaloneHtml(snapshot, resources, "html");
   const filename = `${snapshot.baseName}.html`;
-  await downloadBlob(new Blob([html], { type: "text/html;charset=utf-8" }), filename, "Save HTML archive");
-  return resourceResult(filename, resources);
+  const savedAs = await downloadBlob(new Blob([html], { type: "text/html;charset=utf-8" }), filename, "Save HTML archive", "web-archive.html");
+  return resourceResult(savedAs, resources);
 }
 
 async function saveZipArchive(snapshot) {
@@ -181,8 +181,8 @@ async function saveZipArchive(snapshot) {
   setStage("Writing ZIP central directory.", 82);
   const zipBlob = new Blob([createZip(files)], { type: "application/zip" });
   const filename = `${snapshot.baseName}.webarchive.zip`;
-  await downloadBlob(zipBlob, filename, "Save Web Archive ZIP");
-  return resourceResult(filename, resources);
+  const savedAs = await downloadBlob(zipBlob, filename, "Save Web Archive ZIP", "web-archive.webarchive.zip");
+  return resourceResult(savedAs, resources);
 }
 
 function resourceResult(filename, resources) {
@@ -193,7 +193,7 @@ function resourceResult(filename, resources) {
   };
 }
 
-async function downloadBlob(blob, filename, saveAsTitle) {
+async function downloadBlob(blob, filename, saveAsTitle, fallbackName) {
   setStage(`Starting download: ${filename}`, 92);
   const url = URL.createObjectURL(blob);
   try {
@@ -203,12 +203,30 @@ async function downloadBlob(blob, filename, saveAsTitle) {
       saveAs: true,
       conflictAction: "uniquify"
     });
+    setTimeout(() => URL.revokeObjectURL(url), OBJECT_URL_REVOKE_MS);
+    return filename;
   } catch (error) {
+    // Chrome can still reject the name (too long, reserved, illegal chars).
+    // Retry once with a guaranteed-safe ASCII name before giving up.
+    if (fallbackName && fallbackName !== filename) {
+      try {
+        setStage(`Name rejected (${error.message}); retrying as ${fallbackName}.`, 92);
+        await chrome.downloads.download({
+          url,
+          filename: fallbackName,
+          saveAs: true,
+          conflictAction: "uniquify"
+        });
+        setTimeout(() => URL.revokeObjectURL(url), OBJECT_URL_REVOKE_MS);
+        return fallbackName;
+      } catch (retryError) {
+        URL.revokeObjectURL(url);
+        throw new Error(`${saveAsTitle} failed: ${retryError.message}`);
+      }
+    }
     URL.revokeObjectURL(url);
     throw new Error(`${saveAsTitle} failed: ${error.message}`);
   }
-
-  setTimeout(() => URL.revokeObjectURL(url), OBJECT_URL_REVOKE_MS);
 }
 
 function normalizeSnapshot(snapshot, tabUrl) {
