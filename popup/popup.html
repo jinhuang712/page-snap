@@ -14,11 +14,14 @@
           <svg viewBox="0 0 128 128" aria-hidden="true"><g transform="translate(64 64) scale(1.15) translate(-64 -64)"><g stroke="#0F1726" stroke-width="9" stroke-linecap="round" fill="none"><path d="M16 36 V16 H36"/><path d="M92 16 H112 V36"/></g><g stroke="#1F63F2" stroke-width="9" stroke-linecap="round" fill="none"><path d="M16 92 V112 H36"/><path d="M112 92 V112 H92"/></g><path d="M40 30 H80 L88 38 V98 H40 Z" fill="#0F1726"/><line x1="27" y1="66" x2="101" y2="66" stroke="#1F63F2" stroke-width="5" stroke-linecap="round"/></g></svg>
           <span class="name">PageSnap</span>
         </div>
-        <span id="status-pill" class="status-pill">Ready</span>
+        <div class="header-right">
+          <button id="lang" class="lang" type="button" data-i18n="langToggle" title="中文 / English">中</button>
+          <span id="status-pill" class="status-pill">Ready</span>
+        </div>
       </header>
 
       <section class="field">
-        <p class="lbl">Format</p>
+        <p class="lbl" data-i18n="format">Format</p>
         <div class="segments" id="format-segments">
           <button type="button" data-fmt="mhtml" aria-pressed="true">MHTML</button>
           <button type="button" data-fmt="html" aria-pressed="false">HTML</button>
@@ -33,18 +36,18 @@
 
       <div class="opts">
         <label class="toggle">
-          <span>Scroll full page first</span>
+          <span data-i18n="scroll">Scroll full page first</span>
           <input id="scroll-page" type="checkbox" checked>
           <span class="track"></span>
         </label>
         <label class="toggle">
-          <span>Include readable text</span>
+          <span data-i18n="readable">Include readable text</span>
           <input id="include-readable-text" type="checkbox" checked>
           <span class="track"></span>
         </label>
       </div>
 
-      <button id="save" type="button">Capture page</button>
+      <button id="save" type="button" data-i18n="capture">Capture page</button>
 
       <p id="status" role="status" aria-live="polite"></p>
     </main>
