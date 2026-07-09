@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PageSnap</title>
+<script>
+(function () {
+  var lang = (navigator.language || navigator.userLanguage || "en").toLowerCase();
+  var dest = lang.indexOf("zh") === 0 ? "cn_ZH.html" : "en_US.html";
+  location.replace(dest + location.hash);
+})();
+</script>
+<meta http-equiv="refresh" content="0; url=en_US.html">
+</head>
+<body>
+Redirecting… <a href="en_US.html">English</a> · <a href="cn_ZH.html">中文</a>
+</body>
+</html>
