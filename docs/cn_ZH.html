@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PageSnap — 定格这一页,完整留存</title>
-<meta name="description" content="一个零依赖的 Chrome 扩展,把任意网页保存成忠实、AI 可读的归档。">
+<title>PageSnap — 定格这一页,完整无损</title>
+<meta name="description" content="一个零依赖的 Chrome 扩展,把任意网页完整地存成 AI 可读的归档。">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
@@ -134,14 +134,14 @@
   <div class="wrap">
     <div class="hero-grid">
       <div>
-        <p class="eyebrow"><span class="dot"></span>网页归档器 · 为代理而捕获</p>
-        <h1 class="title">定格这一页。<br>完整<em>留存</em>。</h1>
-        <p class="lede">一个零依赖的 Chrome 扩展,把任意网页保存成忠实归档——既给人重温,也给 AI 代理阅读。</p>
+        <p class="eyebrow"><span class="dot"></span>网页归档 · 专为 AI 代理打造</p>
+        <h1 class="title">定格这一页,<br>完整<em>无损</em>。</h1>
+        <p class="lede">一个零依赖的 Chrome 扩展,把任意网页完整地保存下来——人能看,AI 也能读。</p>
         <div class="ctas">
           <a class="btn primary" href="https://github.com/jinhuang712/page-snap">在 GitHub 查看 ↗</a>
           <a class="btn ghost" href="#install">安装</a>
         </div>
-        <p class="readout mono"><b>● 直播中</b> &nbsp; 1.2 MB · 42 资源 · zh-CN · UTF-8</p>
+        <p class="readout mono"><b>● 采集中</b> &nbsp; 1.2 MB · 42 项资源 · zh-CN · UTF-8</p>
       </div>
 
       <div>
@@ -157,7 +157,7 @@
 <b>    return "snap"</b></div>
           </div>
         </div>
-        <p class="fig mono">一页,被框取、被扫描</p>
+        <p class="fig mono">取景框里,正在扫描一页</p>
       </div>
     </div>
   </div>
@@ -167,9 +167,9 @@
   <div class="wrap">
     <div class="sec-head"><span class="num mono">01</span><h2>三种格式</h2><span class="rule"></span></div>
     <div class="sheet">
-      <div class="fmt"><span class="ext mono">.MHTML</span><span class="desc"><b>最忠实。</b>Chrome 原生捕获——精确页面状态,浏览器解析的资源。</span><span class="badge mono">mhtml</span></div>
+      <div class="fmt"><span class="ext mono">.MHTML</span><span class="desc"><b>最还原。</b>Chrome 原生捕获——完整保留页面状态和所有资源。</span><span class="badge mono">mhtml</span></div>
       <div class="fmt"><span class="ext mono">.SINGLE</span><span class="desc"><b>自包含。</b>单个 .html,所有资源内联为 data URL。</span><span class="badge mono">html</span></div>
-      <div class="fmt"><span class="ext mono">.ZIP</span><span class="desc"><b>可携带。</b>index.html + 文本 + 消息 + 资源,开箱即用给代理。</span><span class="badge mono">zip</span></div>
+      <div class="fmt"><span class="ext mono">.ZIP</span><span class="desc"><b>可携带。</b>index.html + 文本 + 消息 + 资源,拿来就能交给代理。</span><span class="badge mono">zip</span></div>
     </div>
   </div>
 </section>
@@ -177,7 +177,7 @@
 <section style="background:var(--paper-2);border-top:1px solid var(--grid);border-bottom:1px solid var(--grid)">
   <div class="wrap">
     <div class="sec-head"><span class="num mono">02</span><h2>为代理而生</h2><span class="rule"></span></div>
-    <p style="color:var(--ink-2);max-width:60ch;margin:0 0 30px">每个归档都带 agent 可读层。代码块保留缩进;对话页输出结构化回合。真实样本:</p>
+    <p style="color:var(--ink-2);max-width:60ch;margin:0 0 30px">每份归档都附带一层面向 agent 的可读文本:代码块保留缩进,对话页还会解析成结构化的回合。真实样本如下:</p>
     <div class="specs">
       <div class="spec">
         <span class="crop tl"></span><span class="crop tr"></span><span class="crop bl"></span><span class="crop br"></span>
@@ -188,18 +188,18 @@
 
 def add(a, b):
     return a + b</pre>
-        <p class="cap mono">非破坏性 · 代码完整</p>
+        <p class="cap mono">无损提取 · 代码完整</p>
       </div>
       <div class="spec">
         <span class="crop tl"></span><span class="crop tr"></span><span class="crop bl"></span><span class="crop br"></span>
         <p class="fname mono">messages.json</p>
 <pre>[
   { <span class="k">"role"</span>: <span class="s">"user"</span>,
-    <span class="k">"text"</span>: <span class="s">"1加1等于几?"</span> },
+    <span class="k">"text"</span>: <span class="s">"1 加 1 等于几?"</span> },
   { <span class="k">"role"</span>: <span class="s">"assistant"</span>,
-    <span class="k">"text"</span>: <span class="s">"等于2。"</span> }
+    <span class="k">"text"</span>: <span class="s">"等于 2。"</span> }
 ]</pre>
-        <p class="cap mono">基于 DOM 的回合 · ChatGPT 与 Claude</p>
+        <p class="cap mono">按 DOM 结构切分回合 · 支持 ChatGPT 与 Claude</p>
       </div>
     </div>
   </div>
