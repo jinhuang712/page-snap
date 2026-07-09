@@ -96,7 +96,7 @@ header {
 #format { display: none; }
 
 /* ---- toggle switches ---- */
-.opts { display: grid; gap: 11px; }
+.opts { display: grid; gap: 15px; }
 .toggle {
   display: flex;
   align-items: center;
