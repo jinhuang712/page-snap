@@ -1,4 +1,5 @@
-# PageSnap
+<p align="center"><img src="icons/icon-128.png" width="128" alt="PageSnap"></p>
+<h1 align="center">PageSnap</h1>
 
 PageSnap is a small unpacked Chrome extension for saving the current page as:
 
