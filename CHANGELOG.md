@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.3.0 - 2026-07-09
+
+- Replaced lossy readable-text extraction with non-destructive extraction that preserves code-block newlines and indentation and block structure.
+- Replaced hardcoded ChatGPT text-marker conversation detection with DOM-based detection covering ChatGPT and Claude (config-driven; extensible to other sites).
+- Removed `text-content.md` and the Single HTML markdown embed; the HTML snapshot is the rich representation and `text-content.txt` is the lean plain-text view.
+
 ## 0.2.0 - 2026-05-30
 
 - Added agent-readable Markdown and structured message JSON to Single HTML exports.
