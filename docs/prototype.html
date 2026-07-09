@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PageSnap — interaction prototypes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#ECEFF3;--card:#FFFFFF;--ink:#0F1726;--ink-2:#33415A;--data:#56657A;
+    --scan:#1F63F2;--rec:#E0482E;--grid:#D2D9E2;--grid-soft:#E2E7ED;--ok:#15803d;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:"Space Grotesk",system-ui,sans-serif;background:var(--paper);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased;padding-bottom:80px}
+  .mono{font-family:"JetBrains Mono",ui-monospace,monospace}
+  a{color:var(--scan);text-decoration:none}
+
+  .top{display:flex;align-items:center;justify-content:space-between;padding:16px clamp(16px,5vw,40px);border-bottom:1px solid var(--grid);position:sticky;top:0;background:var(--paper);z-index:5}
+  .mark{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.04em;font-size:14px}
+  .mark svg{width:20px;height:20px}
+  .back{font-size:13px;color:var(--ink-2)}
+
+  .wrap{max-width:1080px;margin:0 auto;padding:clamp(24px,4vw,40px) clamp(16px,5vw,40px) 0}
+  h1{font-size:clamp(24px,4vw,34px);letter-spacing:-.01em;margin:0 0 8px}
+  .intro{color:var(--ink-2);max-width:62ch;margin:0 0 22px}
+
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:28px}
+  .tab{border:1px solid var(--grid);background:var(--card);color:var(--ink-2);font:inherit;font-size:13px;font-weight:500;padding:9px 14px;border-radius:8px;cursor:pointer}
+  .tab[aria-selected="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .vname{font-size:12px;color:var(--data);letter-spacing:.16em;text-transform:uppercase;margin:0 0 14px}
+
+  .panel{display:none}
+  .panel.active{display:block}
+  .stage-row{display:flex;gap:16px;align-items:center;justify-content:center;flex-wrap:wrap;padding:30px 0}
+
+  /* shared components */
+  .pop{width:300px;background:var(--card);border:1px solid var(--grid);border-radius:12px;padding:16px;display:grid;gap:13px}
+  .pop .ph{display:flex;align-items:center;justify-content:space-between}
+  .pop .ph .brand{display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px}
+  .pop .ph .brand svg{width:18px;height:18px}
+  .pop .ph .pill{font-family:"JetBrains Mono",monospace;font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--grid);border-radius:999px;padding:3px 8px;color:var(--data)}
+  .pop .ph .pill.busy{color:var(--rec);border-color:#F0C4BB;background:#FBEEE9}
+  .pop .ph .pill.done{color:var(--ok);border-color:#BFE3C9;background:#ECFDF3}
+  .lbl{margin:0;font-family:"JetBrains Mono",monospace;font-size:9.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--data)}
+  .segs{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+  .segs button{font:inherit;font-size:12px;font-weight:500;padding:8px 0;border:1px solid var(--grid);background:var(--card);color:var(--ink-2);border-radius:7px;cursor:pointer}
+  .segs button[aria-pressed="true"]{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .sw{display:flex;align-items:center;justify-content:space-between;gap:10px;font-size:12.5px;color:var(--ink-2);cursor:pointer}
+  .sw input{display:none}
+  .sw .tk{width:32px;height:18px;border-radius:999px;background:var(--grid);position:relative;flex:none;transition:.12s}
+  .sw .tk::after{content:"";position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;transition:.12s;box-shadow:0 1px 2px rgba(0,0,0,.25)}
+  .sw input:checked+.tk{background:var(--scan)}
+  .sw input:checked+.tk::after{transform:translateX(14px)}
+  .btn{width:100%;min-height:38px;border:0;border-radius:8px;background:var(--scan);color:#fff;font:inherit;font-weight:600;font-size:13.5px;cursor:pointer}
+  .btn:hover{background:#1858D6}
+  .btn:disabled{background:#A9B4C0;cursor:not-allowed}
+  .btn.ghost{background:var(--card);border:1px solid var(--grid);color:var(--ink)}
+  .btn.ghost:hover{background:var(--ink);color:#fff;border-color:var(--ink)}
+
+  /* runner mock */
+  .run{width:360px;background:var(--card);border:1px solid var(--grid);border-radius:12px;padding:18px;display:grid;gap:14px}
+  .run .rh{display:flex;align-items:center;justify-content:space-between}
+  .run .rh .brand{display:flex;align-items:center;gap:8px;font-weight:700;font-size:13px}
+  .run .rh .brand svg{width:18px;height:18px}
+  .vp{position:relative;background:#F2F5F8;border:1px solid var(--grid-soft);border-radius:10px;padding:26px 14px 16px}
+  .vp .bk{position:absolute;width:14px;height:14px;border:2px solid var(--scan)}
+  .vp .bk.tl{top:8px;left:8px;border-right:0;border-bottom:0}.vp .bk.tr{top:8px;right:8px;border-left:0;border-bottom:0}
+  .vp .bk.bl{bottom:8px;left:8px;border-right:0;border-top:0}.vp .bk.br{bottom:8px;right:8px;border-left:0;border-top:0}
+  .vp .tg{position:absolute;top:7px;left:50%;transform:translateX(-50%);font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.22em;text-transform:uppercase;color:var(--data)}
+  #stage1{margin:2px 0 12px;min-height:18px;font-size:13px;color:var(--ink)}
+  progress{appearance:none;-webkit-appearance:none;width:100%;height:6px;border:0;border-radius:999px;background:var(--grid);display:block}
+  progress::-webkit-progress-bar{background:var(--grid);border-radius:999px}
+  progress::-webkit-progress-value{background:linear-gradient(90deg,var(--scan),#9CC1FF);border-radius:999px;box-shadow:0 0 10px rgba(31,99,242,.55);transition:width .25s ease}
+  progress::-moz-progress-bar{background:linear-gradient(90deg,var(--scan),#9CC1FF);border-radius:999px}
+  .ro{margin:0;border:1px solid var(--grid);border-radius:9px;overflow:hidden}
+  .ro>div{display:grid;grid-template-columns:80px 1fr;gap:8px;padding:8px 12px;border-bottom:1px solid var(--grid-soft);align-items:center}
+  .ro>div:last-child{border-bottom:0}
+  .ro dt{margin:0;font-family:"JetBrains Mono",monospace;font-size:9.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--data)}
+  .ro dd{margin:0;font-family:"JetBrains Mono",monospace;font-size:11.5px;color:var(--ink);word-break:break-all}
+  .log{margin:0;background:#0F1726;color:#C7D3E2;border:1px solid #1E2A3D;border-radius:9px;padding:10px 12px;font-family:"JetBrains Mono",monospace;font-size:10.5px;line-height:1.6;white-space:pre-wrap;min-height:96px;max-height:150px;overflow:auto}
+  .log .ok{color:#7FE3B0}.log .er{color:#FF9B8A}
+
+  /* inline snap */
+  .snap{width:340px;background:var(--card);border:1px solid var(--grid);border-radius:14px;padding:20px;position:relative;overflow:hidden}
+  .snap .beam{position:absolute;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--scan) 30%,#BDDBFF 50%,var(--scan) 70%,transparent);box-shadow:0 0 18px 3px rgba(31,99,242,.5);top:-4px;opacity:0}
+  .snap.run .beam{animation:beam 1s linear}
+  @keyframes beam{0%{top:-4px;opacity:0}10%{opacity:1}90%{opacity:1}100%{top:calc(100% + 4px);opacity:0}}
+  .snap .flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+  .snap.flash .flash{animation:fl .35s ease}
+  @keyframes fl{0%{opacity:0}30%{opacity:.9}100%{opacity:0}}
+  .result{display:none}
+  .result.show{display:block}
+  .result .rf{display:flex;align-items:center;gap:14px;padding:10px 0 6px}
+  .result .rf svg{width:40px;height:40px;flex:none}
+  .result .rn{font-weight:700;font-size:14px}
+  .result .rm{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--data)}
+
+  /* checklist */
+  .check{width:340px}
+  .check .cs{display:grid;gap:6px;margin:0 0 16px;padding:0;list-style:none}
+  .check .cs li{display:flex;align-items:center;gap:12px;padding:11px 14px;border:1px solid var(--grid);border-radius:9px;background:var(--card);font-size:13px}
+  .check .cs li .d{width:16px;height:16px;border-radius:50%;border:2px solid var(--grid);flex:none;position:relative}
+  .check .cs li.active .d{border-color:var(--scan);box-shadow:0 0 0 4px rgba(31,99,242,.15)}
+  .check .cs li.done .d{background:var(--ok);border-color:var(--ok)}
+  .check .cs li.done .d::after{content:"";position:absolute;left:4px;top:1px;width:5px;height:9px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+  .check .cs li.active{color:var(--scan);font-weight:500}
+  .check .cs li.todo{color:var(--data)}
+
+  @media (prefers-reduced-motion:reduce){
+    .snap .beam,.snap .flash,.pop .ph .brand .rec{animation:none!important}
+  }
+  .hint{text-align:center;color:var(--data);font-size:12px;margin-top:18px}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="mark">
+    <svg viewBox="0 0 128 128" aria-hidden="true"><g transform="translate(64 64) scale(1.15) translate(-64 -64)"><g stroke="#0F1726" stroke-width="9" stroke-linecap="round" fill="none"><path d="M16 36 V16 H36"/><path d="M92 16 H112 V36"/></g><g stroke="#1F63F2" stroke-width="9" stroke-linecap="round" fill="none"><path d="M16 92 V112 H36"/><path d="M112 92 V112 H92"/></g><path d="M40 30 H80 L88 38 V98 H40 Z" fill="#0F1726"/><line x1="27" y1="66" x2="101" y2="66" stroke="#1F63F2" stroke-width="5" stroke-linecap="round"/></g></svg>
+    PAGE&nbsp;SNAP
+  </div>
+  <a class="back" href="en_US.html">← back to site</a>
+</div>
+
+<div class="wrap">
+  <h1>Capture flow — interaction prototypes</h1>
+  <p class="intro">Three directions for the popup → capture → done interaction. Click <b>Capture</b> in any of them to feel the flow (this is a simulated prototype — no real page is saved).</p>
+
+  <div class="tabs" role="tablist">
+    <button class="tab" aria-selected="true" data-v="1">A · Two-window</button>
+    <button class="tab" aria-selected="false" data-v="2">B · Inline snap</button>
+    <button class="tab" aria-selected="false" data-v="3">C · Checklist</button>
+  </div>
+
+  <!-- ===== A: two-window ===== -->
+  <section class="panel active" data-panel="1">
+    <p class="vname">A — popup opens a capture window (faithful to real behavior)</p>
+    <div class="stage-row">
+      <div class="pop" id="pop1">
+        <div class="ph"><div class="brand"><svg viewBox="0 0 128 128"><use href="#m"/></svg>PageSnap</div><span class="pill" id="pill1">Ready</span></div>
+        <div><p class="lbl">Format</p>
+          <div class="segs" data-segs="fmt1">
+            <button data-fmt="MHTML" aria-pressed="true">MHTML</button>
+            <button data-fmt="HTML" aria-pressed="false">HTML</button>
+            <button data-fmt="ZIP" aria-pressed="false">ZIP</button>
+          </div>
+        </div>
+        <label class="sw">Scroll full page first<input type="checkbox" checked><span class="tk"></span></label>
+        <label class="sw">Include readable text<input type="checkbox" checked><span class="tk"></span></label>
+        <button class="btn" id="cap1">Capture page</button>
+      </div>
+      <div class="run" id="run1">
+        <div class="rh"><div class="brand"><svg viewBox="0 0 128 128"><use href="#m"/></svg>PageSnap</div><span class="pill busy" id="rpill1">Working</span></div>
+        <div class="vp"><span class="bk tl"></span><span class="bk tr"></span><span class="bk bl"></span><span class="bk br"></span><span class="tg">capturing</span>
+          <div id="stage1" class="mono">Idle.</div>
+          <progress id="prog1" max="100" value="0"></progress>
+        </div>
+        <dl class="ro">
+          <div><dt>Format</dt><dd id="rfmt1">MHTML</dd></div>
+          <div><dt>File</dt><dd id="rfile1">—</dd></div>
+          <div><dt>Resources</dt><dd id="rres1">—</dd></div>
+        </dl>
+        <pre class="log" id="rlog1">ready.</pre>
+      </div>
+    </div>
+    <p class="hint">Click <b>Capture page</b> → the capture window steps through scroll → snapshot → fetch resources → pack → download.</p>
+  </section>
+
+  <!-- ===== B: inline snap ===== -->
+  <section class="panel" data-panel="2">
+    <p class="vname">B — everything in one panel; a scan beam + flash, then a result card</p>
+    <div class="stage-row">
+      <div class="snap" id="snap2">
+        <span class="beam"></span><span class="flash"></span>
+        <div id="snapForm">
+          <div class="ph" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px"><div class="brand" style="font-weight:700;font-size:13px">PageSnap</div><span class="pill" id="pill2">Ready</span></div>
+          <p class="lbl">Format</p>
+          <div class="segs" data-segs="fmt2" style="margin-bottom:13px">
+            <button data-fmt="MHTML" aria-pressed="true">MHTML</button>
+            <button data-fmt="HTML" aria-pressed="false">HTML</button>
+            <button data-fmt="ZIP" aria-pressed="false">ZIP</button>
+          </div>
+          <button class="btn" id="cap2">Capture page</button>
+        </div>
+        <div class="result" id="snapResult">
+          <div class="rf"><svg viewBox="0 0 128 128"><g transform="translate(64 64) scale(.9) translate(-64 -64)"><path d="M40 30 H80 L88 38 V98 H40 Z" fill="#0F1726"/><line x1="40" y1="70" x2="88" y2="70" stroke="#1F63F2" stroke-width="5"/><path d="M88 38 a16 16 0 1 1 -16 -16" fill="none" stroke="#15803d" stroke-width="8" stroke-linecap="round"/></g></svg>
+            <div><div class="rn" id="resName">page.webarchive.zip</div><div class="rm" id="resMeta">1.2 MB · 42 resources · 1280×800</div></div>
+          </div>
+          <div style="display:flex;gap:8px;margin-top:14px">
+            <button class="btn ghost" id="again2" style="width:auto;flex:1">Capture again</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <p class="hint">Click <b>Capture</b> → scan beam sweeps, flash, result slides in (~1.5s). No second window.</p>
+  </section>
+
+  <!-- ===== C: checklist ===== -->
+  <section class="panel" data-panel="3">
+    <p class="vname">C — capture as a live checklist of stages</p>
+    <div class="stage-row">
+      <div class="check">
+        <div class="pop" style="width:auto;margin-bottom:16px">
+          <div class="ph"><div class="brand"><svg viewBox="0 0 128 128"><use href="#m"/></svg>PageSnap</div><span class="pill" id="pill3">Ready</span></div>
+          <div style="display:flex;gap:8px;align-items:end">
+            <div style="flex:1"><p class="lbl">Format</p>
+              <div class="segs" data-segs="fmt3">
+                <button data-fmt="MHTML" aria-pressed="false">MHTML</button>
+                <button data-fmt="HTML" aria-pressed="false">HTML</button>
+                <button data-fmt="ZIP" aria-pressed="true">ZIP</button>
+              </div>
+            </div>
+            <button class="btn" id="cap3" style="width:auto;padding:0 18px">Capture</button>
+          </div>
+        </div>
+        <ul class="cs" id="cs3">
+          <li class="todo"><span class="d"></span>Scroll full page</li>
+          <li class="todo"><span class="d"></span>Snapshot DOM + readable text</li>
+          <li class="todo"><span class="d"></span>Fetch resources (42)</li>
+          <li class="todo"><span class="d"></span>Pack archive</li>
+          <li class="todo"><span class="d"></span>Save download</li>
+        </ul>
+        <progress id="prog3" max="100" value="0"></progress>
+      </div>
+    </div>
+    <p class="hint">Click <b>Capture</b> → stages light up and check off left-to-right with a scan pulse.</p>
+  </section>
+</div>
+
+<svg width="0" height="0" style="position:absolute"><symbol id="m" viewBox="0 0 128 128"><g transform="translate(64 64) scale(1.15) translate(-64 -64)"><g stroke="#0F1726" stroke-width="9" stroke-linecap="round" fill="none"><path d="M16 36 V16 H36"/><path d="M92 16 H112 V36"/></g><g stroke="#1F63F2" stroke-width="9" stroke-linecap="round" fill="none"><path d="M16 92 V112 H36"/><path d="M112 92 V112 H92"/></g><path d="M40 30 H80 L88 38 V98 H40 Z" fill="#0F1726"/><line x1="27" y1="66" x2="101" y2="66" stroke="#1F63F2" stroke-width="5" stroke-linecap="round"/></g></symbol></svg>
+
+<script>
+  const rm = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const wait = (ms) => new Promise((r) => setTimeout(r, rm ? ms / 4 : ms));
+
+  // ---- format segments (all three variants) ----
+  document.querySelectorAll("[data-segs]").forEach((box) => {
+    const btns = box.querySelectorAll("button");
+    btns.forEach((b) => b.addEventListener("click", () => {
+      btns.forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+    }));
+  });
+
+  // ---- tabs ----
+  document.querySelectorAll(".tab").forEach((t) => {
+    t.addEventListener("click", () => {
+      document.querySelectorAll(".tab").forEach((x) => x.setAttribute("aria-selected", String(x === t)));
+      const v = t.dataset.v;
+      document.querySelectorAll(".panel").forEach((p) => p.classList.toggle("active", p.dataset.panel === v));
+    });
+  });
+
+  const fmtOf = (id) => (document.querySelector(`[data-segs="${id}"] button[aria-pressed="true"]`) || {}).dataset?.fmt || "MHTML";
+
+  // ===== A: two-window capture =====
+  const cap1 = document.getElementById("cap1");
+  cap1.addEventListener("click", async () => {
+    cap1.disabled = true;
+    const fmt = fmtOf("fmt1");
+    const stage = document.getElementById("stage1");
+    const prog = document.getElementById("prog1");
+    const log = document.getElementById("rlog1");
+    const pill = document.getElementById("rpill1");
+    document.getElementById("rfmt1").textContent = fmt;
+    document.getElementById("rfile1").textContent = "—";
+    document.getElementById("rres1").textContent = "—";
+    pill.className = "pill busy"; pill.textContent = "Working";
+    log.textContent = "▶ capture started"; prog.value = 0;
+
+    const steps = [
+      ["Scrolling full page…", 10, "scroll 42 steps"],
+      ["Collecting DOM + readable text…", 26, "snapshot taken"],
+      ["Fetching resources…", 40, "GET 01/42"],
+      ["Fetching resources…", 58, "GET 18/42"],
+      ["Fetching resources…", 74, "GET 42/42"],
+      ["Writing ZIP central directory…", 88, "zip ok"],
+      ["Starting download…", 100, "page.webarchive.zip"],
+    ];
+    for (const [s, p, l] of steps) {
+      stage.textContent = s;
+      prog.value = p;
+      log.textContent += "\n" + (p === 100 ? "✓ " : "· ") + l;
+      log.scrollTop = log.scrollHeight;
+      await wait(620);
+    }
+    document.getElementById("rfile1").textContent = "page." + (fmt === "MHTML" ? "mhtml" : fmt === "HTML" ? "html" : "webarchive.zip");
+    document.getElementById("rres1").textContent = "42 captured, 0 failed";
+    pill.className = "pill done"; pill.textContent = "Done";
+    stage.textContent = "Download started. Keep this window open until it lands.";
+    cap1.disabled = false; cap1.textContent = "Capture again";
+  });
+
+  // ===== B: inline snap =====
+  const cap2 = document.getElementById("cap2");
+  const snap = document.getElementById("snap2");
+  cap2.addEventListener("click", async () => {
+    cap2.disabled = true;
+    document.getElementById("pill2").className = "pill busy";
+    document.getElementById("pill2").textContent = "Scanning";
+    snap.classList.add("run");
+    await wait(1000);
+    snap.classList.remove("run");
+    snap.classList.add("flash");
+    await wait(340);
+    snap.classList.remove("flash");
+    document.getElementById("snapForm").style.display = "none";
+    const fmt = fmtOf("fmt2");
+    document.getElementById("resName").textContent = "page." + (fmt === "MHTML" ? "mhtml" : fmt === "HTML" ? "html" : "webarchive.zip");
+    document.getElementById("resMeta").textContent = "1.2 MB · 42 resources · 1280×800";
+    document.getElementById("snapResult").classList.add("show");
+    document.getElementById("pill2").className = "pill done";
+    document.getElementById("pill2").textContent = "Done";
+  });
+  document.getElementById("again2").addEventListener("click", () => {
+    document.getElementById("snapResult").classList.remove("show");
+    document.getElementById("snapForm").style.display = "";
+    document.getElementById("pill2").className = "pill"; document.getElementById("pill2").textContent = "Ready";
+    cap2.disabled = false;
+  });
+
+  // ===== C: checklist =====
+  const cap3 = document.getElementById("cap3");
+  cap3.addEventListener("click", async () => {
+    cap3.disabled = true;
+    const items = [...document.querySelectorAll("#cs3 li")];
+    const prog = document.getElementById("prog3");
+    const pill = document.getElementById("pill3");
+    pill.className = "pill busy"; pill.textContent = "Working";
+    prog.value = 0;
+    items.forEach((li) => { li.className = "todo"; });
+    const per = 100 / items.length;
+    for (let i = 0; i < items.length; i++) {
+      items[i].className = "active";
+      await wait(rm ? 160 : 640);
+      items[i].className = "done";
+      prog.value = Math.round(per * (i + 1));
+      await wait(120);
+    }
+    pill.className = "pill done"; pill.textContent = "Done";
+    cap3.disabled = false;
+  });
+</script>
+</body>
+</html>
