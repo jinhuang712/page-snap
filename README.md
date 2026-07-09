@@ -1,6 +1,7 @@
 <p align="center"><img src="icons/icon-128.png" width="128" alt="PageSnap"></p>
 <h1 align="center">PageSnap</h1>
 <p align="center"><strong>Save any web page as a faithful, AI-readable archive.</strong></p>
+<p align="center"><a href="https://jinhuang712.github.io/page-snap/">🌐 Website · jinhuang712.github.io/page-snap</a></p>
 <p align="center">
   <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-blue.svg">
   <img alt="Chrome Extension" src="https://img.shields.io/badge/Chrome-Extension-20232a?logo=googlechrome&logoColor=white">
