@@ -164,10 +164,6 @@ async function saveZipArchive(snapshot) {
       data: new TextEncoder().encode(snapshot.readableText || "")
     },
     {
-      path: "text-content.md",
-      data: new TextEncoder().encode(snapshot.readableMarkdown || snapshot.readableText || "")
-    },
-    {
       path: "messages.json",
       data: new TextEncoder().encode(JSON.stringify(snapshot.readableMessages || [], null, 2))
     }
@@ -399,14 +395,6 @@ function injectArchiveMetadata(archiveDocument, snapshot, resources) {
     head.prepend(readableText);
   }
 
-  if (snapshot.readableMarkdown) {
-    const readableMarkdown = archiveDocument.createElement("script");
-    readableMarkdown.type = "text/markdown";
-    readableMarkdown.id = "web-scanner-readable-markdown";
-    readableMarkdown.textContent = snapshot.readableMarkdown;
-    head.prepend(readableMarkdown);
-  }
-
   if (snapshot.readableMessages?.length) {
     const readableMessages = archiveDocument.createElement("script");
     readableMessages.type = "application/json";
@@ -436,7 +424,6 @@ function buildMetadata(snapshot, resources) {
     dimensions: snapshot.dimensions,
     readableText: {
       textChars: snapshot.readableText?.length || 0,
-      markdownChars: snapshot.readableMarkdown?.length || 0,
       messages: snapshot.readableMessages?.length || 0
     },
     resourceCount: resources.length,
