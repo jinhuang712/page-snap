@@ -3,34 +3,34 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Saving Web Archive</title>
+    <title>Capturing — PageSnap</title>
     <link rel="stylesheet" href="runner.css">
   </head>
   <body>
     <main class="runner">
       <header>
-        <h1>Saving Archive</h1>
+        <div class="brand">
+          <span class="rec"></span>
+          <svg viewBox="0 0 128 128" aria-hidden="true"><g transform="translate(64 64) scale(1.15) translate(-64 -64)"><g stroke="#0F1726" stroke-width="9" stroke-linecap="round" fill="none"><path d="M16 36 V16 H36"/><path d="M92 16 H112 V36"/></g><g stroke="#1F63F2" stroke-width="9" stroke-linecap="round" fill="none"><path d="M16 92 V112 H36"/><path d="M112 92 V112 H92"/></g><path d="M40 30 H80 L88 38 V98 H40 Z" fill="#0F1726"/><line x1="27" y1="66" x2="101" y2="66" stroke="#1F63F2" stroke-width="5" stroke-linecap="round"/></g></svg>
+          <span class="name">PageSnap</span>
+        </div>
         <span id="status-pill" class="status-pill busy">Working</span>
       </header>
 
-      <section class="progress-panel">
+      <section class="viewport">
+        <span class="bracket tl"></span>
+        <span class="bracket tr"></span>
+        <span class="bracket bl"></span>
+        <span class="bracket br"></span>
+        <span class="tag">capturing</span>
         <div id="stage">Starting capture.</div>
         <progress id="progress" max="100" value="3"></progress>
       </section>
 
-      <dl class="details">
-        <div>
-          <dt>Format</dt>
-          <dd id="format">-</dd>
-        </div>
-        <div>
-          <dt>File</dt>
-          <dd id="filename">-</dd>
-        </div>
-        <div>
-          <dt>Resources</dt>
-          <dd id="resources">-</dd>
-        </div>
+      <dl class="readout">
+        <div><dt>Format</dt><dd id="format">-</dd></div>
+        <div><dt>File</dt><dd id="filename">-</dd></div>
+        <div><dt>Resources</dt><dd id="resources">-</dd></div>
       </dl>
 
       <pre id="log" aria-live="polite"></pre>

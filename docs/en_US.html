@@ -3,101 +3,234 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>PageSnap — Save any web page as a faithful, AI-readable archive</title>
-<meta name="description" content="A small, dependency-free Chrome extension that captures the current page and packages it for coding agents and AI.">
+<title>PageSnap — Capture the page. Keep it whole.</title>
+<meta name="description" content="A dependency-free Chrome extension that captures any web page as a faithful, AI-readable archive.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  :root { --blue:#2563eb; --slate:#0f172a; --slate2:#1e293b; --line:#e2e8f0; --muted:#64748b; --bg:#f8fafc; }
-  * { box-sizing:border-box; }
-  html,body { margin:0; padding:0; }
-  body { font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; color:var(--slate); background:var(--bg); line-height:1.6; }
-  a { color:var(--blue); text-decoration:none; }
-  a:hover { text-decoration:underline; }
-  nav { position:absolute; top:0; left:0; right:0; display:flex; align-items:center; justify-content:space-between; padding:18px 28px; color:#cbd5e1; }
-  nav .brand { font-weight:700; letter-spacing:-.5px; }
-  nav .lang { border:1px solid #475569; border-radius:999px; padding:5px 12px; font-size:13px; color:#e2e8f0; }
-  nav .lang:hover { background:rgba(255,255,255,.08); text-decoration:none; }
-  .hero { background:radial-gradient(circle at 28% 18%, var(--slate2) 0%, var(--slate) 70%); color:#f8fafc; text-align:center; padding:104px 24px 72px; }
-  .hero svg { width:104px; height:104px; filter:drop-shadow(0 14px 34px rgba(37,99,235,.4)); }
-  .hero h1 { font-size:52px; margin:18px 0 8px; letter-spacing:-1.5px; }
-  .hero p.lead { font-size:21px; color:#cbd5e1; margin:0 auto 28px; max-width:640px; }
-  .cta { display:inline-flex; gap:12px; flex-wrap:wrap; justify-content:center; }
-  .btn { display:inline-block; padding:12px 22px; border-radius:10px; font-weight:650; font-size:15px; transition:transform .1s; }
-  .btn:hover { text-decoration:none; transform:translateY(-1px); }
-  .btn.primary { background:var(--blue); color:#fff; }
-  .btn.ghost { border:1px solid #475569; color:#e2e8f0; }
-  .wrap { max-width:920px; margin:0 auto; padding:0 24px; }
-  section { padding:64px 0; }
-  h2 { font-size:30px; letter-spacing:-.6px; margin:0 0 10px; text-align:center; }
-  .sub { text-align:center; color:var(--muted); margin:0 auto 36px; max-width:560px; }
-  .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:18px; }
-  .card { background:#fff; border:1px solid var(--line); border-radius:14px; padding:24px; }
-  .card .ico { font-size:24px; }
-  .card h3 { margin:10px 0 6px; font-size:17px; }
-  .card p { margin:0; color:var(--muted); font-size:14.5px; }
-  code, pre { font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace; }
-  pre { background:var(--slate); color:#e2e8f0; padding:16px 18px; border-radius:10px; overflow:auto; font-size:13.5px; }
-  .steps { counter-reset:s; list-style:none; padding:0; margin:0 0 22px; }
-  .steps li { position:relative; padding:8px 0 8px 42px; border-bottom:1px solid var(--line); }
-  .steps li:last-child { border-bottom:0; }
-  .steps li::before { counter-increment:s; content:counter(s); position:absolute; left:0; top:8px; width:28px; height:28px; line-height:28px; text-align:center; background:var(--blue); color:#fff; border-radius:50%; font-size:13px; font-weight:700; }
-  footer { border-top:1px solid var(--line); padding:32px 24px; text-align:center; color:var(--muted); font-size:14px; }
+  :root{
+    --paper:#ECEFF3; --paper-2:#F6F8FA; --card:#FFFFFF;
+    --ink:#0F1726; --ink-2:#33415A; --data:#56657A;
+    --scan:#1F63F2; --rec:#E0482E;
+    --grid:#D2D9E2; --grid-soft:#E2E7ED;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{font-family:"Space Grotesk",system-ui,sans-serif;background:var(--paper);color:var(--ink);line-height:1.55;-webkit-font-smoothing:antialiased}
+  .mono{font-family:"JetBrains Mono",ui-monospace,monospace}
+  a{color:var(--scan);text-decoration:none}
+  a:hover{text-decoration:underline}
+
+  /* ---- top bar ---- */
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:16px clamp(16px,5vw,40px);border-bottom:1px solid var(--grid);background:var(--paper);position:sticky;top:0;z-index:5}
+  .mark{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.06em;font-size:14px}
+  .mark svg{width:22px;height:22px}
+  .mark .rec{width:8px;height:8px;border-radius:50%;background:var(--rec);box-shadow:0 0 0 0 rgba(224,72,46,.5);animation:pulse 2.4s infinite}
+  .topnav{display:flex;align-items:center;gap:18px;font-size:13px}
+  .topnav .lang{border:1px solid var(--grid);border-radius:999px;padding:5px 12px;color:var(--ink-2)}
+  .topnav .lang:hover{background:var(--card);text-decoration:none}
+  .topnav .gh{color:var(--ink-2)}
+
+  /* ---- layout ---- */
+  .wrap{max-width:1080px;margin:0 auto;padding:0 clamp(16px,5vw,40px)}
+  section{padding:clamp(56px,8vw,96px) 0}
+
+  /* ---- hero ---- */
+  .hero{padding-top:clamp(40px,6vw,72px);padding-bottom:clamp(40px,6vw,72px)}
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:clamp(28px,5vw,56px);align-items:center}
+  .eyebrow{font-size:12px;letter-spacing:.22em;color:var(--data);text-transform:uppercase;margin:0 0 18px}
+  .eyebrow .dot{display:inline-block;width:7px;height:7px;background:var(--rec);border-radius:50%;margin-right:8px;transform:translateY(-1px)}
+  h1.title{font-size:clamp(38px,6vw,64px);line-height:1.02;letter-spacing:-.02em;margin:0 0 18px;font-weight:700}
+  h1.title em{font-style:normal;color:var(--scan)}
+  .lede{font-size:clamp(16px,2vw,19px);color:var(--ink-2);margin:0 0 26px;max-width:34ch}
+  .ctas{display:flex;gap:12px;flex-wrap:wrap}
+  .btn{display:inline-flex;align-items:center;gap:8px;padding:12px 20px;border-radius:8px;font-weight:500;font-size:15px;transition:transform .12s ease,background .12s ease}
+  .btn:hover{text-decoration:none;transform:translateY(-1px)}
+  .btn.primary{background:var(--scan);color:#fff}
+  .btn.ghost{border:1px solid var(--grid);color:var(--ink)}
+  .btn.ghost:hover{background:var(--card)}
+  .readout{margin-top:26px;font-size:12.5px;color:var(--data);letter-spacing:.04em}
+  .readout b{color:var(--rec);font-weight:500}
+
+  /* ---- capture stage (signature) ---- */
+  .stage{position:relative;background:linear-gradient(180deg,#E7EBF0,#DDE3EA);border-radius:14px;padding:34px;min-height:300px;display:flex;align-items:center;justify-content:center}
+  .stage .bracket{position:absolute;width:22px;height:22px;border:2.5px solid var(--scan)}
+  .stage .bracket.tl{top:14px;left:14px;border-right:0;border-bottom:0}
+  .stage .bracket.tr{top:14px;right:14px;border-left:0;border-bottom:0}
+  .stage .bracket.bl{bottom:14px;left:14px;border-right:0;border-top:0}
+  .stage .bracket.br{bottom:14px;right:14px;border-left:0;border-top:0}
+  .stage .tag{position:absolute;top:14px;left:50%;transform:translateX(-50%);font-size:10.5px;letter-spacing:.2em;color:var(--data);text-transform:uppercase}
+  .page{position:relative;width:100%;max-width:300px;background:var(--card);border:1px solid var(--grid);border-radius:6px;padding:16px 16px 18px;box-shadow:0 14px 40px rgba(15,23,38,.12);overflow:hidden}
+  .page .urlbar{display:flex;align-items:center;gap:7px;padding-bottom:10px;border-bottom:1px solid var(--grid-soft);margin-bottom:12px}
+  .page .dots{display:flex;gap:5px}
+  .page .dots i{width:7px;height:7px;border-radius:50%;background:var(--grid);display:block}
+  .page .url{flex:1;height:11px;border-radius:3px;background:var(--grid-soft)}
+  .page h4{font-size:12px;margin:0 0 4px;font-weight:700}
+  .page .ln{height:6px;border-radius:2px;background:var(--grid-soft);margin:6px 0}
+  .page .ln.w70{width:70%}.page .ln.w90{width:90%}.page .ln.w50{width:50%}
+  .page .code{margin-top:10px;background:#0F1726;border-radius:5px;padding:9px 10px;font-family:"JetBrains Mono",monospace;font-size:9.5px;color:#9FB4CC;line-height:1.5;white-space:pre}
+  .page .code b{color:#7FE3B0}
+  .scan{position:absolute;left:-4px;right:-4px;height:3px;background:linear-gradient(90deg,transparent,var(--scan) 20%,#9CC1FF 50%,var(--scan) 80%,transparent);box-shadow:0 0 16px 2px rgba(31,99,242,.5);top:30%;animation:sweep 3s cubic-bezier(.45,0,.55,1) infinite}
+  @keyframes sweep{0%{top:14%}50%{top:84%}100%{top:14%}}
+  @media (prefers-reduced-motion:reduce){
+    .scan{animation:none;top:50%}
+    .mark .rec{animation:none}
+  }
+  .fig{font-size:11px;letter-spacing:.16em;color:var(--data);text-transform:uppercase;margin-top:16px;text-align:center}
+
+  /* ---- section heading ---- */
+  .sec-head{display:flex;align-items:baseline;gap:14px;margin-bottom:36px}
+  .sec-head .num{font-size:12px;color:var(--rec);letter-spacing:.2em}
+  .sec-head h2{font-size:clamp(24px,3.5vw,34px);letter-spacing:-.01em;margin:0;font-weight:700}
+  .sec-head .rule{flex:1;height:1px;background:var(--grid)}
+
+  /* ---- format sheet ---- */
+  .sheet{border-top:1px solid var(--grid)}
+  .fmt{display:grid;grid-template-columns:130px 1fr 70px;gap:18px;align-items:center;padding:20px 4px;border-bottom:1px solid var(--grid)}
+  .fmt .ext{font-size:13px;color:var(--scan)}
+  .fmt .desc{color:var(--ink-2);font-size:15.5px}
+  .fmt .desc b{color:var(--ink);font-weight:500}
+  .fmt .badge{text-align:right;font-size:11px;color:var(--data);letter-spacing:.1em}
+
+  /* ---- specimen cards ---- */
+  .specs{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+  .spec{position:relative;background:var(--card);border:1px solid var(--grid);border-radius:12px;padding:22px}
+  .spec .crop{position:absolute;width:12px;height:12px;border:1.5px solid var(--grid)}
+  .spec .crop.tl{top:-1px;left:-1px;border-right:0;border-bottom:0}
+  .spec .crop.tr{top:-1px;right:-1px;border-left:0;border-bottom:0}
+  .spec .crop.bl{bottom:-1px;left:-1px;border-right:0;border-top:0}
+  .spec .crop.br{bottom:-1px;right:-1px;border-left:0;border-top:0}
+  .spec .fname{font-size:12px;color:var(--scan);letter-spacing:.06em;margin-bottom:14px}
+  .spec pre{margin:0;font-family:"JetBrains Mono",monospace;font-size:12.5px;line-height:1.7;color:var(--ink-2);white-space:pre-wrap}
+  .spec pre .k{color:var(--scan)}.spec pre .s{color:var(--rec)}
+  .spec .cap{margin-top:14px;font-size:11px;color:var(--data);letter-spacing:.12em;text-transform:uppercase}
+
+  /* ---- install log ---- */
+  .log{background:#0F1726;border-radius:12px;overflow:hidden;border:1px solid #1E2A3D}
+  .log .bar{display:flex;align-items:center;gap:8px;padding:11px 16px;border-bottom:1px solid #1E2A3D}
+  .log .bar i{width:10px;height:10px;border-radius:50%;background:#33415A;display:block}
+  .log .bar span{font-family:"JetBrains Mono",monospace;font-size:11px;color:#6B7D94;letter-spacing:.1em}
+  .log ol{list-style:none;margin:0;padding:16px 20px;font-family:"JetBrains Mono",monospace;font-size:13px;color:#C7D3E2}
+  .log ol li{padding:7px 0;display:flex;gap:16px}
+  .log ol li .n{color:#56657A;min-width:22px}
+  .log ol li .c{color:#fff}
+  .log ol li .c .v{color:#7FE3B0}
+
+  footer{border-top:1px solid var(--grid);padding:30px clamp(16px,5vw,40px);text-align:center;font-size:13px;color:var(--data)}
+
+  @media (max-width:820px){
+    .hero-grid{grid-template-columns:1fr}
+    .specs{grid-template-columns:1fr}
+    .fmt{grid-template-columns:90px 1fr;}
+    .fmt .badge{display:none}
+  }
 </style>
 </head>
 <body>
-<nav>
-  <span class="brand">PageSnap</span>
-  <a class="lang" href="cn_ZH.html">中文</a>
-</nav>
+<div class="topbar">
+  <div class="mark">
+    <span class="rec"></span>
+    <svg viewBox="0 0 128 128" aria-hidden="true"><g transform="translate(64 64) scale(1.15) translate(-64 -64)"><g stroke="#0F1726" stroke-width="9" stroke-linecap="round" fill="none"><path d="M16 36 V16 H36"/><path d="M92 16 H112 V36"/></g><g stroke="#1F63F2" stroke-width="9" stroke-linecap="round" fill="none"><path d="M16 92 V112 H36"/><path d="M112 92 V112 H92"/></g><path d="M40 30 H80 L88 38 V98 H40 Z" fill="#0F1726"/><line x1="27" y1="66" x2="101" y2="66" stroke="#1F63F2" stroke-width="5" stroke-linecap="round"/></g></svg>
+    PAGE&nbsp;SNAP
+  </div>
+  <nav class="topnav">
+    <a class="gh" href="https://github.com/jinhuang712/page-snap">GitHub ↗</a>
+    <a class="lang" href="cn_ZH.html">中文</a>
+  </nav>
+</div>
 
 <header class="hero">
-  <svg viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <g transform="translate(64 64) scale(1.15) translate(-64 -64)">
-      <g stroke="#2563eb" stroke-width="7" stroke-linecap="round" fill="none"><path d="M16 36 V16 H36"/><path d="M92 16 H112 V36"/></g>
-      <g stroke="#cbd5e1" stroke-width="7" stroke-linecap="round" fill="none"><path d="M16 92 V112 H36"/><path d="M112 92 V112 H92"/></g>
-      <path d="M40 30 H80 L88 38 V98 H40 Z" fill="#f8fafc" stroke="#0f172a" stroke-width="4" stroke-linejoin="round"/>
-      <path d="M42 32 H79 L86 39 V65 H42 Z" fill="#dbeafe"/>
-      <path d="M80 30 V38 H88 Z" fill="#cbd5e1" stroke="#0f172a" stroke-width="4" stroke-linejoin="round"/>
-      <line x1="27" y1="66" x2="101" y2="66" stroke="#2563eb" stroke-width="4" stroke-linecap="round"/>
-      <g stroke="#94a3b8" stroke-width="4" stroke-linecap="round"><line x1="48" y1="78" x2="80" y2="78"/><line x1="48" y1="88" x2="72" y2="88"/></g>
-    </g>
-  </svg>
-  <h1>PageSnap</h1>
-  <p class="lead">Save any web page as a faithful, AI-readable archive.</p>
-  <div class="cta">
-    <a class="btn primary" href="https://github.com/jinhuang712/page-snap">View on GitHub</a>
-    <a class="btn ghost" href="#install">Install</a>
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <p class="eyebrow"><span class="dot"></span>Web archiver · capture for agents</p>
+        <h1 class="title">Capture the page.<br>Keep it <em>whole.</em></h1>
+        <p class="lede">A dependency-free Chrome extension that saves any web page as a faithful archive — for humans to revisit and for AI agents to read.</p>
+        <div class="ctas">
+          <a class="btn primary" href="https://github.com/jinhuang712/page-snap">View on GitHub ↗</a>
+          <a class="btn ghost" href="#install">Install</a>
+        </div>
+        <p class="readout mono"><b>● LIVE</b> &nbsp; 1.2 MB · 42 assets · zh-CN · UTF-8</p>
+      </div>
+
+      <div>
+        <div class="stage">
+          <span class="bracket tl"></span><span class="bracket tr"></span><span class="bracket bl"></span><span class="bracket br"></span>
+          <span class="tag mono">FIG. 01 — capturing</span>
+          <div class="page">
+            <div class="scan"></div>
+            <div class="urlbar"><span class="dots"><i></i><i></i><i></i></span><span class="url"></span></div>
+            <h4>Readable fixture title</h4>
+            <div class="ln w90"></div><div class="ln w70"></div><div class="ln w50"></div>
+            <div class="code">def hello():
+<b>    return "snap"</b></div>
+          </div>
+        </div>
+        <p class="fig mono">a page, framed and scanned</p>
+      </div>
+    </div>
   </div>
 </header>
 
-<section id="features">
+<section style="padding-top:0">
   <div class="wrap">
-    <h2>Why PageSnap</h2>
-    <p class="sub">Chrome's built-in save loses lazy-loaded content and mangles readable text. PageSnap captures everything and packages it for both humans and agents.</p>
-    <div class="cards">
-      <div class="card"><div class="ico">📦</div><h3>Three formats</h3><p>MHTML, a self-contained Single HTML, or a portable Web Archive ZIP. Pick the fidelity you need.</p></div>
-      <div class="card"><div class="ico">🤖</div><h3>Built for AI</h3><p>Non-destructive plain text with code blocks intact, plus structured conversation turns in <code>messages.json</code>.</p></div>
-      <div class="card"><div class="ico">🧩</div><h3>Lossless capture</h3><p>Scrolls lazy-loaded content first, then snapshots the full rendered DOM. Nothing important is left behind.</p></div>
-      <div class="card"><div class="ico">🍃</div><h3>Tiny &amp; open</h3><p>Vanilla JS, no build step, no runtime deps. MIT licensed.</p></div>
+    <div class="sec-head"><span class="num mono">01</span><h2>Three formats</h2><span class="rule"></span></div>
+    <div class="sheet">
+      <div class="fmt"><span class="ext mono">.MHTML</span><span class="desc"><b>Most faithful.</b> Chrome's native capture — exact page state, browser-resolved resources.</span><span class="badge mono">mhtml</span></div>
+      <div class="fmt"><span class="ext mono">.SINGLE</span><span class="desc"><b>Self-contained.</b> One .html with every resource inlined as data URLs.</span><span class="badge mono">html</span></div>
+      <div class="fmt"><span class="ext mono">.ZIP</span><span class="desc"><b>Portable.</b> index.html + text + messages + resources, ready for agents.</span><span class="badge mono">zip</span></div>
     </div>
   </div>
 </section>
 
-<section id="install" style="background:#fff; border-top:1px solid var(--line); border-bottom:1px solid var(--line);">
+<section style="background:var(--paper-2);border-top:1px solid var(--grid);border-bottom:1px solid var(--grid)">
   <div class="wrap">
-    <h2>Install</h2>
-    <p class="sub">Load it as an unpacked extension in Chrome.</p>
-    <pre>git clone https://github.com/jinhuang712/page-snap.git</pre>
-    <ol class="steps" style="margin-top:24px">
-      <li>Open <code>chrome://extensions</code>.</li>
-      <li>Enable <strong>Developer mode</strong>.</li>
-      <li>Click <strong>Load unpacked</strong> and choose the cloned <code>page-snap</code> folder.</li>
-    </ol>
-    <p style="color:var(--muted);font-size:14.5px">Then open any page, click the PageSnap icon, pick a format, and save. See the <a href="https://github.com/jinhuang712/page-snap#readme">README</a> for details.</p>
+    <div class="sec-head"><span class="num mono">02</span><h2>Built for agents</h2><span class="rule"></span></div>
+    <p style="color:var(--ink-2);max-width:60ch;margin:0 0 30px">Every archive carries an agent-readable layer. Code blocks keep their indentation; conversation pages come out as structured turns. Real specimens:</p>
+    <div class="specs">
+      <div class="spec">
+        <span class="crop tl"></span><span class="crop tr"></span><span class="crop bl"></span><span class="crop br"></span>
+        <p class="fname mono">text-content.txt</p>
+<pre>What is 1 + 1?
+
+It is 2.
+
+def add(a, b):
+    return a + b</pre>
+        <p class="cap mono">Non-destructive · code intact</p>
+      </div>
+      <div class="spec">
+        <span class="crop tl"></span><span class="crop tr"></span><span class="crop bl"></span><span class="crop br"></span>
+        <p class="fname mono">messages.json</p>
+<pre>[
+  { <span class="k">"role"</span>: <span class="s">"user"</span>,
+    <span class="k">"text"</span>: <span class="s">"What is 1+1?"</span> },
+  { <span class="k">"role"</span>: <span class="s">"assistant"</span>,
+    <span class="k">"text"</span>: <span class="s">"It is 2."</span> }
+]</pre>
+        <p class="cap mono">DOM-based turns · ChatGPT &amp; Claude</p>
+      </div>
+    </div>
   </div>
 </section>
 
-<footer>
-  MIT License · PageSnap · <a href="https://github.com/jinhuang712/page-snap">GitHub</a>
-</footer>
+<section id="install" style="padding-top:clamp(48px,7vw,80px)">
+  <div class="wrap">
+    <div class="sec-head"><span class="num mono">03</span><h2>Install</h2><span class="rule"></span></div>
+    <div class="log">
+      <div class="bar"><i></i><i></i><i></i><span>install.log</span></div>
+      <ol>
+        <li><span class="n">01</span><span class="c">git clone https://github.com/jinhuang712/page-snap.git</span></li>
+        <li><span class="n">02</span><span class="c">open <span class="v">chrome://extensions</span></span></li>
+        <li><span class="n">03</span><span class="c">enable Developer mode</span></li>
+        <li><span class="n">04</span><span class="c">Load unpacked → <span class="v">page-snap/</span></span></li>
+      </ol>
+    </div>
+    <p style="color:var(--data);font-size:14px;margin-top:18px">Then open any page, hit the PageSnap icon, pick a format, save. Full details in the <a href="https://github.com/jinhuang712/page-snap#readme">README</a>.</p>
+  </div>
+</section>
+
+<footer>MIT License · PageSnap · <a href="https://github.com/jinhuang712/page-snap">GitHub</a></footer>
 </body>
 </html>
