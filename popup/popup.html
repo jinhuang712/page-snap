@@ -53,16 +53,5 @@
     </main>
 
     <script src="popup.js" type="module"></script>
-    <script type="module">
-      // Sync the segmented format selector to the hidden <select> that popup.js reads.
-      const select = document.getElementById("format");
-      const buttons = document.querySelectorAll("#format-segments button");
-      function press(value) {
-        select.value = value;
-        buttons.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.fmt === value)));
-      }
-      buttons.forEach((b) => b.addEventListener("click", () => press(b.dataset.fmt)));
-      press(select.value || "mhtml");
-    </script>
   </body>
 </html>

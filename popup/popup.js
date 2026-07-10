@@ -108,5 +108,14 @@ saveButton.addEventListener("click", async () => {
   }
 });
 
+// segmented format selector -> hidden <select> (must live in popup.js; MV3 CSP blocks inline scripts)
+const formatButtons = document.querySelectorAll("#format-segments button");
+function pressFormat(value) {
+  formatSelect.value = value;
+  formatButtons.forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.fmt === value)));
+}
+formatButtons.forEach((b) => b.addEventListener("click", () => pressFormat(b.dataset.fmt)));
+pressFormat(formatSelect.value || "mhtml");
+
 applyI18n();
 setStatus("ready", "status_ready");
