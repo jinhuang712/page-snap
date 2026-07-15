@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.1 - 2026-07-15
+
+- Fixed format segment buttons (MHTML/HTML/ZIP) not responding under MV3 Content Security Policy by moving the inline sync script into `popup.js`.
+- Added Chinese/English language toggle in the popup.
+- Added breathing room between option toggles.
+- Added a downloadable `pagesnap.zip` linked from the landing pages; install steps rewritten with icons and a direct `chrome://extensions` link.
+
 ## 0.3.0 - 2026-07-09
 
 - Replaced lossy readable-text extraction with non-destructive extraction that preserves code-block newlines and indentation and block structure.
